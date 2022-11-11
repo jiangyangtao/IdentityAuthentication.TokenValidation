@@ -8,6 +8,8 @@ namespace IdentityAuthentication.TokenValidation
     {
         public string Authority { get; set; }
 
+        internal static Uri AuthorityUrl { set; get; }
+
         public new IdentityAuthenticationEvents Events
         {
             get { return (IdentityAuthenticationEvents)base.Events!; }
@@ -44,5 +46,12 @@ namespace IdentityAuthentication.TokenValidation
 
 
         public new Func<HttpContext, string?>? ForwardDefaultSelector { get; }
+
+        public Uri GetAuthorityUri()
+        {
+            if (string.IsNullOrEmpty(Authority)) throw new NullReferenceException($"{nameof(Authority)} is null or empty");
+
+            return new Uri(Authority);
+        }
     }
 }
