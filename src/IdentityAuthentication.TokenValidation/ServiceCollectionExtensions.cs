@@ -1,4 +1,5 @@
 ﻿using IdentityAuthentication.Model.Handles;
+using IdentityAuthentication.TokenValidation.Protos;
 using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,8 +28,14 @@ namespace IdentityAuthentication.TokenValidation
                 options.Authority = config.Authority;
             });
 
+            services.AddSingleton<TokenService>();
             services.AddSingleton<ConfigurationService>();
             services.AddSingleton<AuthenticationEndpointService>();
+
+            services.AddGrpcClient<TokenProto.TokenProtoClient>(options =>
+            {
+                options.Address = IdentityAuthenticationOptions.AuthorityUrl;
+            });
             return services;
         }
 
