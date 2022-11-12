@@ -34,11 +34,6 @@ namespace IdentityAuthentication.TokenValidation
             services.AddSingleton<ITokenProvider, ReferenceTokenProvider>();
             services.AddSingleton<ITokenProviderFactory, TokenProviderFactory>();
 
-            services.AddSingleton<ITokenValidateService, HttpTokenValidateService>();
-            services.AddSingleton<ITokenValidateService, GrpcTokenValidateService>();
-            services.AddSingleton<ITokenValidateServiceFactory, TokenValidateServiceFactory>();
-
-            services.AddSingleton<GrpcTokenValidateService>();
             services.AddSingleton<ConfigurationService>();
             services.AddSingleton<AuthenticationEndpointService>();
 

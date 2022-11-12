@@ -45,12 +45,12 @@ namespace IdentityAuthentication.TokenValidation.Services
         private async Task<SecretKeyConfiguration> GetSecretKeyConfigurationAsync()
         {
             var endpoint = IdentityAuthenticationConfiguration.AuthenticationEndpoints.SecretKeyConfigurationEndpoint;
-            var cnfig = await GetConfigurationAsync<SecretKeyConfigurationBase>(endpoint);
+            var config = await GetConfigurationAsync<SecretKeyConfigurationBase>(endpoint);
             return new SecretKeyConfiguration
             {
-                HmacSha256Key = cnfig.HmacSha256Key,
-                RsaPublicKey = cnfig.RsaPublicKey,
-                RsaPrivateKey = string.Empty
+                HmacSha256Key = config.HmacSha256Key,
+                RsaSignaturePublicKey = config.RsaSignaturePublicKey,
+                RsaDecryptPrivateKey = config.RsaDecryptPrivateKey
             };
         }
 

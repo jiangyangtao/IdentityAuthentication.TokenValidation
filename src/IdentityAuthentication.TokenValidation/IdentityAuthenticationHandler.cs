@@ -1,23 +1,78 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using IdentityAuthentication.Model.Handlers;
+using IdentityAuthentication.Model.Handles;
+using IdentityAuthentication.TokenValidation.Abstractions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text.Encodings.Web;
 
 namespace IdentityAuthentication.TokenValidation
 {
     internal class IdentityAuthenticationHandler : AuthenticationHandler<IdentityAuthenticationOptions>
     {
-        public IdentityAuthenticationHandler(IOptionsMonitor<IdentityAuthenticationOptions> options, 
-            ILoggerFactory logger, 
-            UrlEncoder encoder, 
-            ISystemClock clock) : base(options, logger, encoder, clock)
-        {
+        private readonly ITokenProvider _tokenProvider;
 
+        private readonly AuthenticateResult EmptyAuthenticateSuccessResult;
+
+        public IdentityAuthenticationHandler(IOptionsMonitor<IdentityAuthenticationOptions> options,
+            ILoggerFactory logger,
+            UrlEncoder encoder,
+            ISystemClock clock,
+            ITokenProviderFactory tokenProviderFactory) : base(options, logger, encoder, clock)
+        {
+            _tokenProvider = tokenProviderFactory.CreateTokenProvider();
+
+
+            var ticket = new AuthenticationTicket(new ClaimsPrincipal(), IdentityAuthenticationDefaults.AuthenticationScheme);
+            EmptyAuthenticateSuccessResult = AuthenticateResult.Success(ticket);
         }
 
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            throw new NotImplementedException();
+            var messageReceivedContext = new MessageReceivedContext(Context, Scheme, Options);
+
+            await Events.MessageReceived(messageReceivedContext);
+            if (messageReceivedContext.Result != null)
+            {
+                return messageReceivedContext.Result;
+            }
+
+            var allowAnonymous = Context.GetEndpoint().Metadata.GetMetadata<IAllowAnonymous>();
+            if (allowAnonymous != null) return EmptyAuthenticateSuccessResult;
+
+            var token = messageReceivedContext.Token;
+            if (token.IsNullOrEmpty())
+            {
+                var authorization = Request.Headers.Authorization.ToString();
+                if (authorization.IsNullOrEmpty()) return AuthenticateResult.NoResult();
+
+                if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                {
+                    token = authorization["Bearer ".Length..].Trim();
+                }
+
+                if (token.IsNullOrEmpty()) return AuthenticateResult.NoResult();
+            }
+
+            var tokenValidationResult = await _tokenProvider.ValidateTokenAsync(token);
+            if (tokenValidationResult.IsValid == false) return AuthenticateResult.NoResult();
+
+            var principal = tokenValidationResult.ClaimsIdentity.ToClaimsPrincipal();
+            var tokenValidatedContext = new TokenValidatedContext(Context, Scheme, Options)
+            {
+                Principal = principal,
+                SecurityToken = tokenValidationResult.SecurityToken
+            };
+
+            await Events.OnTokenValidated(tokenValidatedContext);
+            if (tokenValidatedContext.Result != null) return tokenValidatedContext.Result;
+
+            tokenValidatedContext.Success();
+            return tokenValidatedContext.Result!;
         }
     }
 }
