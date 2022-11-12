@@ -42,10 +42,16 @@ namespace IdentityAuthentication.TokenValidation.Services
             return await GetConfigurationAsync<RefreshTokenConfiguration>(endpoint);
         }
 
-        private async Task<SecretKeyConfigurationBase> GetSecretKeyConfigurationAsync()
+        private async Task<SecretKeyConfiguration> GetSecretKeyConfigurationAsync()
         {
             var endpoint = IdentityAuthenticationConfiguration.AuthenticationEndpoints.SecretKeyConfigurationEndpoint;
-            return await GetConfigurationAsync<SecretKeyConfigurationBase>(endpoint);
+            var cnfig = await GetConfigurationAsync<SecretKeyConfigurationBase>(endpoint);
+            return new SecretKeyConfiguration
+            {
+                HmacSha256Key = cnfig.HmacSha256Key,
+                RsaPublicKey = cnfig.RsaPublicKey,
+                RsaPrivateKey = string.Empty
+            };
         }
 
         private async Task<TConfiguration> GetConfigurationAsync<TConfiguration>(string endpoint) where TConfiguration : class

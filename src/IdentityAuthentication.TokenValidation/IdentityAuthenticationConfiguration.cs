@@ -13,6 +13,6 @@ namespace IdentityAuthentication.TokenValidation
 
         public static RefreshTokenConfiguration RefreshTokenConfiguration { set; get; }
 
-        public static SecretKeyConfigurationBase SecretKeyConfiguration { set; get; }
+        public static SecretKeyConfiguration SecretKeyConfiguration { set; get; }
     }
 }

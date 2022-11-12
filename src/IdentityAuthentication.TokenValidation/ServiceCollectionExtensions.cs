@@ -1,5 +1,7 @@
 ﻿using IdentityAuthentication.Model.Handles;
+using IdentityAuthentication.TokenValidation.Abstractions;
 using IdentityAuthentication.TokenValidation.Protos;
+using IdentityAuthentication.TokenValidation.Providers;
 using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +30,15 @@ namespace IdentityAuthentication.TokenValidation
                 options.Authority = config.Authority;
             });
 
-            services.AddSingleton<TokenService>();
+            services.AddSingleton<ITokenProvider, JwtTokenProvider>();
+            services.AddSingleton<ITokenProvider, ReferenceTokenProvider>();
+            services.AddSingleton<ITokenProviderFactory, TokenProviderFactory>();
+
+            services.AddSingleton<ITokenValidateService, HttpTokenValidateService>();
+            services.AddSingleton<ITokenValidateService, GrpcTokenValidateService>();
+            services.AddSingleton<ITokenValidateServiceFactory, TokenValidateServiceFactory>();
+
+            services.AddSingleton<GrpcTokenValidateService>();
             services.AddSingleton<ConfigurationService>();
             services.AddSingleton<AuthenticationEndpointService>();
 
