@@ -31,6 +31,12 @@ namespace IdentityAuthentication.TokenValidation
             EmptyAuthenticateSuccessResult = AuthenticateResult.Success(ticket);
         }
 
+        protected new IdentityAuthenticationEvents Events
+        {
+            get => (IdentityAuthenticationEvents)base.Events!;
+            set => base.Events = value;
+        }
+
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             var messageReceivedContext = new MessageReceivedContext(Context, Scheme, Options);
@@ -61,7 +67,8 @@ namespace IdentityAuthentication.TokenValidation
             var tokenValidationResult = await _tokenProvider.ValidateTokenAsync(token);
             if (tokenValidationResult.IsValid == false) return AuthenticateResult.NoResult();
 
-            var principal = tokenValidationResult.ClaimsIdentity.ToClaimsPrincipal();
+
+            var principal = new ClaimsPrincipal(tokenValidationResult.ClaimsIdentity);
             var tokenValidatedContext = new TokenValidatedContext(Context, Scheme, Options)
             {
                 Principal = principal,
