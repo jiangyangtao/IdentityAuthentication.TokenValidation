@@ -10,54 +10,29 @@ namespace IdentityAuthentication.TokenValidation.Providers
     {
         private readonly RsaAlgorithm _rsaAlgorithm;
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
+        private readonly Model.TokenValidation _tokenValidation;
+        private readonly TokenValidationParameters _tokenValidationParameters;
 
         public JwtTokenProvider()
         {
             _rsaAlgorithm = new RsaAlgorithm(IdentityAuthenticationConfiguration.SecretKeyConfiguration);
-        }
-
-        public TokenType TokenType => TokenType.JWT;
-
-
-        private TokenValidationParameters _tokenValidationParameters;
-
-        private TokenValidationParameters TokenValidationParameters
-        {
-            get
-            {
-                if (_tokenValidationParameters == null)
-                    _tokenValidationParameters = TokenValidation.GenerateAccessTokenValidation();
-
-                return _tokenValidationParameters;
-            }
-        }
-
-
-        private Model.TokenValidation _tokenValidation;
-
-        private Model.TokenValidation TokenValidation
-        {
-            get
-            {
-                if (_tokenValidation == null)
-                {
-                    _tokenValidation = new Model.TokenValidation(
+            _tokenValidation = new Model.TokenValidation(
                         IdentityAuthenticationConfiguration.AccessTokenConfiguration,
                         IdentityAuthenticationConfiguration.RefreshTokenConfiguration,
                         IdentityAuthenticationConfiguration.SecretKeyConfiguration,
                         IdentityAuthenticationConfiguration.AuthenticationConfiguration);
-                }
 
-                return _tokenValidation;
-            }
+            _tokenValidationParameters = _tokenValidation.GenerateAccessTokenValidation();
         }
+
+        public TokenType TokenType => TokenType.JWT;
 
 
         public async Task<TokenValidationResult> ValidateTokenAsync(string token)
         {
             token = HandleTokenDecrypt(token);
 
-            var tokenValidationResult = await _jwtSecurityTokenHandler.ValidateTokenAsync(token, TokenValidationParameters);
+            var tokenValidationResult = await _jwtSecurityTokenHandler.ValidateTokenAsync(token, _tokenValidationParameters);
             return tokenValidationResult;
         }
 
