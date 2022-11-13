@@ -22,6 +22,7 @@ namespace IdentityAuthentication.TokenValidation.Providers
                         IdentityAuthenticationConfiguration.SecretKeyConfiguration,
                         IdentityAuthenticationConfiguration.AuthenticationConfiguration);
 
+            _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             _tokenValidationParameters = _tokenValidation.GenerateAccessTokenValidation();
         }
 

@@ -1,4 +1,5 @@
-﻿using IdentityAuthentication.Model.Configurations;
+﻿using Grpc.Core;
+using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.TokenValidation.Abstractions;
 using IdentityAuthentication.TokenValidation.Protos;
 using Microsoft.IdentityModel.Tokens;
@@ -15,7 +16,6 @@ namespace IdentityAuthentication.TokenValidation.Providers
 
         private readonly StringContent _httpContent;
         public readonly TokenProto.TokenProtoClient _tokenProtoClient;
-        private readonly Model.TokenValidation _tokenValidation;
         private readonly TokenValidationResult _failTokenResult;
 
         public ReferenceTokenProvider(IHttpClientFactory httpClientFactory, TokenProto.TokenProtoClient tokenProtoClient)
@@ -24,11 +24,6 @@ namespace IdentityAuthentication.TokenValidation.Providers
             _tokenProtoClient = tokenProtoClient;
 
             _httpContent = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
-            _tokenValidation = new Model.TokenValidation(IdentityAuthenticationConfiguration.AccessTokenConfiguration,
-                IdentityAuthenticationConfiguration.RefreshTokenConfiguration,
-                IdentityAuthenticationConfiguration.SecretKeyConfiguration,
-                IdentityAuthenticationConfiguration.AuthenticationConfiguration);
-
             _failTokenResult = new TokenValidationResult { IsValid = false, };
         }
 
@@ -44,13 +39,20 @@ namespace IdentityAuthentication.TokenValidation.Providers
 
         private async Task<TokenValidationResult> GrpcValidateTokenAsync(string token)
         {
-            var r = await _tokenProtoClient.AuthorizeAsync(new TokenRequest { Token = token });
-            if (r.Result == false) return new TokenValidationResult
+            try
             {
-                IsValid = r.Result
-            };
-
-            return BuildTokenSuccessResult(r.Claims);
+                var headers = BuildHeader(token);
+                var r = await _tokenProtoClient.AuthorizeAsync(new TokenRequest { Token = token }, headers);
+                if (r.Result == false) return new TokenValidationResult
+                {
+                    IsValid = r.Result
+                };
+                return BuildTokenSuccessResult(r.Claims);
+            }
+            catch
+            {
+                return new TokenValidationResult { IsValid = false };
+            }
         }
 
         private async Task<TokenValidationResult> HttpValidateTokenAsync(string token)
@@ -85,15 +87,20 @@ namespace IdentityAuthentication.TokenValidation.Providers
             }
 
             var identity = new ClaimsIdentity(claims, grantType);
-            var r = DateTime.TryParse(expiration, out DateTime expirationTime);
-            if (r == false) expirationTime = DateTime.Now;
-
-            return new TokenValidationResult
+            var result = new TokenValidationResult
             {
                 IsValid = true,
                 ClaimsIdentity = identity,
-                SecurityToken = _tokenValidation.GenerateAccessSecurityToken(claims.ToArray(), expirationTime.AddHours(-1), expirationTime),
             };
+            return result;
+        }
+
+        private Metadata BuildHeader(string token)
+        {
+            return new Metadata
+                {
+                    { "Authorization", token }
+                };
         }
     }
 }

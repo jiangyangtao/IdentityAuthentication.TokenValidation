@@ -3,6 +3,7 @@ using IdentityAuthentication.TokenValidation.Abstractions;
 using IdentityAuthentication.TokenValidation.Protos;
 using IdentityAuthentication.TokenValidation.Providers;
 using IdentityAuthentication.TokenValidation.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -14,8 +14,8 @@ namespace IdentityAuthentication.TokenValidation.Services
 
         public async Task<AuthenticationEndpoints> GetAuthenticationEndpointsAsync()
         {
-            var httpClient = _httpClientFactory.CreateClient();
-            var response = await httpClient.GetAsync(AuthenticationEndpoints.DefaultConfigurationEndpoint);
+
+            var response = await AuthenticationHttpClient.GetAsync(AuthenticationEndpoints.DefaultConfigurationEndpoint);
             if (response.IsSuccessStatusCode == false) throw new HttpRequestException("Failed to request authentication endpoints.");
 
             var result = await response.Content.ReadAsStringAsync();
@@ -25,6 +25,17 @@ namespace IdentityAuthentication.TokenValidation.Services
             if (endpoints == null) throw new NullReferenceException("Authentication endpoints the response result deserialization failed.");
 
             return endpoints;
+        }
+
+        private HttpClient AuthenticationHttpClient
+        {
+            get
+            {
+                var httpClient = _httpClientFactory.CreateClient();
+                httpClient.BaseAddress = IdentityAuthenticationOptions.AuthorityUrl;
+
+                return httpClient;
+            }
         }
     }
 }
