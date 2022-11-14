@@ -51,7 +51,7 @@ namespace IdentityAuthentication.TokenValidation
             if (allowAnonymous != null) return EmptyAuthenticateSuccessResult;
 
             var token = messageReceivedContext.Token;
-            if (token.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(token))
             {
                 var authorization = Request.Headers.Authorization.ToString();
                 if (authorization.IsNullOrEmpty()) return AuthenticateResult.NoResult();
@@ -61,7 +61,7 @@ namespace IdentityAuthentication.TokenValidation
                     token = authorization["Bearer ".Length..].Trim();
                 }
 
-                if (token.IsNullOrEmpty()) return AuthenticateResult.NoResult();
+                if (string.IsNullOrEmpty(token)) return AuthenticateResult.NoResult();
             }
 
             var tokenValidationResult = await _tokenProvider.ValidateTokenAsync(token);
