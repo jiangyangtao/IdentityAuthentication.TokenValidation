@@ -14,6 +14,7 @@ namespace IdentityAuthentication.TokenValidation.Services
         private const string AccessTokenKey = "access_token";
         private const string RefreTokenHeaderKey = "refresh-token";
         private const string ExpirationKey = ClaimTypes.Expiration;
+        private const string AuthorizationKey = "Authorization";
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -32,7 +33,7 @@ namespace IdentityAuthentication.TokenValidation.Services
 
         public static StringContent EmptyContent => new(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-        public Metadata BuildGrpcHeader(string token = "") => new() { { "Authorization", string.IsNullOrEmpty(token) ? Token : token } };
+        public Metadata BuildGrpcHeader(string token = "") => new() { { AuthorizationKey, string.IsNullOrEmpty(token) ? Token : token } };
 
         public async Task<TokenValidationResult> BuildTokenSuccessResultAsync(string json)
         {
@@ -85,7 +86,7 @@ namespace IdentityAuthentication.TokenValidation.Services
         private async Task HttpRefreshTokenAsync()
         {
             var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Add("Authorization", Token);
+            httpClient.DefaultRequestHeaders.Add(AuthorizationKey, Token);
             var url = IdentityAuthenticationConfiguration.AuthenticationEndpoints.RefreshToeknEndpoint;
             var response = await httpClient.PostAsync(url, EmptyContent);
             if (response.IsSuccessStatusCode == false) return;
