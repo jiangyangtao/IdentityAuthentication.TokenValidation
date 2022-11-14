@@ -1,12 +1,8 @@
-﻿using Grpc.Core;
-using IdentityAuthentication.Model.Configurations;
+﻿using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.TokenValidation.Abstractions;
 using IdentityAuthentication.TokenValidation.Protos;
+using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
-using System.Net.Mime;
-using System.Security.Claims;
-using System.Text;
 
 namespace IdentityAuthentication.TokenValidation.Providers
 {
@@ -14,16 +10,19 @@ namespace IdentityAuthentication.TokenValidation.Providers
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        private readonly StringContent _httpContent;
-        public readonly TokenProto.TokenProtoClient _tokenProtoClient;
+        private readonly TokenProto.TokenProtoClient _tokenProtoClient;
         private readonly TokenValidationResult _failTokenResult;
 
-        public ReferenceTokenProvider(IHttpClientFactory httpClientFactory, TokenProto.TokenProtoClient tokenProtoClient)
+        private readonly RefreshTokenService _refreshTokenService;
+
+        public ReferenceTokenProvider(
+            IHttpClientFactory httpClientFactory,
+            TokenProto.TokenProtoClient tokenProtoClient,
+            RefreshTokenService refreshTokenService)
         {
             _httpClientFactory = httpClientFactory;
             _tokenProtoClient = tokenProtoClient;
-
-            _httpContent = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
+            _refreshTokenService = refreshTokenService;
             _failTokenResult = new TokenValidationResult { IsValid = false, };
         }
 
@@ -41,13 +40,13 @@ namespace IdentityAuthentication.TokenValidation.Providers
         {
             try
             {
-                var headers = BuildHeader(token);
+                var headers = _refreshTokenService.BuildGrpcHeader(token);
                 var r = await _tokenProtoClient.AuthorizeAsync(new TokenRequest { Token = token }, headers);
                 if (r.Result == false) return new TokenValidationResult
                 {
                     IsValid = r.Result
                 };
-                return BuildTokenSuccessResult(r.Claims);
+                return await _refreshTokenService.BuildTokenSuccessResultAsync(r.Claims);
             }
             catch
             {
@@ -61,46 +60,14 @@ namespace IdentityAuthentication.TokenValidation.Providers
             var url = IdentityAuthenticationConfiguration.AuthenticationEndpoints.AuthorizeEndpoint;
 
             httpClient.DefaultRequestHeaders.Add("Authorization", token);
-            var response = await httpClient.PostAsync(url, _httpContent);
+            var response = await httpClient.PostAsync(url, RefreshTokenService.EmptyContent);
             if (response.IsSuccessStatusCode == false) return _failTokenResult;
 
-            var result = await response.Content.ReadAsStringAsync();
-            if (string.IsNullOrEmpty(result)) return _failTokenResult;
+            var json = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(json)) return _failTokenResult;
 
-            return BuildTokenSuccessResult(result);
-        }
-
-        private TokenValidationResult BuildTokenSuccessResult(string json)
-        {
-            var obj = JObject.Parse(json);
-            var claims = new List<Claim>();
-
-            var grantType = string.Empty;
-            var expiration = string.Empty;
-            foreach (var item in obj)
-            {
-                var value = item.Value.ToString();
-                if (item.Key.Equals(nameof(grantType), StringComparison.OrdinalIgnoreCase)) grantType = value;
-                if (item.Key.Equals(ClaimTypes.Expiration, StringComparison.OrdinalIgnoreCase)) expiration = value;
-
-                claims.Add(new Claim(item.Key, value));
-            }
-
-            var identity = new ClaimsIdentity(claims, grantType);
-            var result = new TokenValidationResult
-            {
-                IsValid = true,
-                ClaimsIdentity = identity,
-            };
+            var result = await _refreshTokenService.BuildTokenSuccessResultAsync(json);
             return result;
-        }
-
-        private Metadata BuildHeader(string token)
-        {
-            return new Metadata
-                {
-                    { "Authorization", token }
-                };
         }
     }
 }

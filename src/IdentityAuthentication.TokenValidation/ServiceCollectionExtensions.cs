@@ -34,6 +34,7 @@ namespace IdentityAuthentication.TokenValidation
             services.AddSingleton<ITokenProvider, ReferenceTokenProvider>();
             services.AddSingleton<ITokenProviderFactory, TokenProviderFactory>();
 
+            services.AddSingleton<RefreshTokenService>();
             services.AddSingleton<ConfigurationService>();
             services.AddSingleton<AuthenticationEndpointService>();
 
@@ -41,6 +42,9 @@ namespace IdentityAuthentication.TokenValidation
             {
                 options.Address = IdentityAuthenticationOptions.AuthorityUrl;
             });
+
+            services.AddHttpContextAccessor();
+
             return services;
         }
 

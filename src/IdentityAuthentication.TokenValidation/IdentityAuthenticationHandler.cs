@@ -53,15 +53,20 @@ namespace IdentityAuthentication.TokenValidation
             var token = messageReceivedContext.Token;
             if (string.IsNullOrEmpty(token))
             {
-                var authorization = Request.Headers.Authorization.ToString();
-                if (authorization.IsNullOrEmpty()) return AuthenticateResult.NoResult();
+                token = Request.Headers.Authorization.ToString();
+                if (token.IsNullOrEmpty()) return AuthenticateResult.NoResult();
 
-                if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                 {
-                    token = authorization["Bearer ".Length..].Trim();
+                    token = token["Bearer ".Length..].Trim();
                 }
 
                 if (string.IsNullOrEmpty(token)) return AuthenticateResult.NoResult();
+            }
+            else
+            {
+                // 如果是 SignalR，则将 token 放到 header
+                Context.Request.Headers.Add("Authorization", token);
             }
 
             var tokenValidationResult = await _tokenProvider.ValidateTokenAsync(token);

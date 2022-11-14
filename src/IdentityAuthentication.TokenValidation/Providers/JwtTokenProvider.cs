@@ -1,6 +1,7 @@
 ﻿using IdentityAuthentication.Model;
 using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.TokenValidation.Abstractions;
+using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -12,8 +13,9 @@ namespace IdentityAuthentication.TokenValidation.Providers
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
         private readonly Model.TokenValidation _tokenValidation;
         private readonly TokenValidationParameters _tokenValidationParameters;
+        private readonly RefreshTokenService _claimHandler;
 
-        public JwtTokenProvider()
+        public JwtTokenProvider(RefreshTokenService claimHandler)
         {
             _rsaAlgorithm = new RsaAlgorithm(IdentityAuthenticationConfiguration.SecretKeyConfiguration);
             _tokenValidation = new Model.TokenValidation(
@@ -24,9 +26,12 @@ namespace IdentityAuthentication.TokenValidation.Providers
 
             _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             _tokenValidationParameters = _tokenValidation.GenerateAccessTokenValidation();
+            _claimHandler = claimHandler;
         }
 
         public TokenType TokenType => TokenType.JWT;
+
+      
 
 
         public async Task<TokenValidationResult> ValidateTokenAsync(string token)
@@ -34,6 +39,8 @@ namespace IdentityAuthentication.TokenValidation.Providers
             token = HandleTokenDecrypt(token);
 
             var tokenValidationResult = await _jwtSecurityTokenHandler.ValidateTokenAsync(token, _tokenValidationParameters);
+            await _claimHandler.RefreshTokenAsync(tokenValidationResult.ClaimsIdentity.Claims);
+
             return tokenValidationResult;
         }
 
