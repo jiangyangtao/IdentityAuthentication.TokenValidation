@@ -30,7 +30,7 @@ namespace IdentityAuthentication.TokenValidation.Providers
 
         public async Task<TokenValidationResult> ValidateTokenAsync(string token)
         {
-            if (IdentityAuthenticationConfiguration.AuthenticationConfiguration.EnableGrpcConnection)
+            if (TokenValidationConfiguration.AuthenticationConfiguration.EnableGrpcConnection)
                 return await GrpcValidateTokenAsync(token);
 
             return await HttpValidateTokenAsync(token);
@@ -57,7 +57,7 @@ namespace IdentityAuthentication.TokenValidation.Providers
         private async Task<TokenValidationResult> HttpValidateTokenAsync(string token)
         {
             var httpClient = _httpClientFactory.CreateClient();
-            var url = IdentityAuthenticationConfiguration.AuthenticationEndpoints.AuthorizeEndpoint;
+            var url = TokenValidationConfiguration.AuthenticationEndpoints.AuthorizeEndpoint;
 
             httpClient.DefaultRequestHeaders.Add("Authorization", token);
             var response = await httpClient.PostAsync(url, RefreshTokenService.EmptyContent);

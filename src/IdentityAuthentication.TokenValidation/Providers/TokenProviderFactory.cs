@@ -14,7 +14,7 @@ namespace IdentityAuthentication.TokenValidation.Providers
 
         public ITokenProvider CreateTokenProvider()
         {
-            var tokenType = IdentityAuthenticationConfiguration.AuthenticationConfiguration.TokenType;
+            var tokenType = TokenValidationConfiguration.AuthenticationConfiguration.TokenType;
             return _serviceProvider.GetServices<ITokenProvider>().FirstOrDefault(a => a.TokenType == tokenType);
         }
     }

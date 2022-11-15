@@ -17,12 +17,12 @@ namespace IdentityAuthentication.TokenValidation.Providers
 
         public JwtTokenProvider(RefreshTokenService claimHandler)
         {
-            _rsaAlgorithm = new RsaAlgorithm(IdentityAuthenticationConfiguration.SecretKeyConfiguration);
+            _rsaAlgorithm = new RsaAlgorithm(TokenValidationConfiguration.SecretKeyConfiguration);
             _tokenValidation = new Model.TokenValidation(
-                        IdentityAuthenticationConfiguration.AccessTokenConfiguration,
-                        IdentityAuthenticationConfiguration.RefreshTokenConfiguration,
-                        IdentityAuthenticationConfiguration.SecretKeyConfiguration,
-                        IdentityAuthenticationConfiguration.AuthenticationConfiguration);
+                        TokenValidationConfiguration.AccessTokenConfiguration,
+                        TokenValidationConfiguration.RefreshTokenConfiguration,
+                        TokenValidationConfiguration.SecretKeyConfiguration,
+                        TokenValidationConfiguration.AuthenticationConfiguration);
 
             _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             _tokenValidationParameters = _tokenValidation.GenerateAccessTokenValidation();
@@ -51,7 +51,7 @@ namespace IdentityAuthentication.TokenValidation.Providers
         /// <returns></returns>
         private string HandleTokenDecrypt(string token)
         {
-            if (IdentityAuthenticationConfiguration.AuthenticationConfiguration.EnableJwtEncrypt == false) return token;
+            if (TokenValidationConfiguration.AuthenticationConfiguration.EnableJwtEncrypt == false) return token;
 
             return _rsaAlgorithm.Decrypt(token);
         }

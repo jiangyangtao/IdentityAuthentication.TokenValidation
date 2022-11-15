@@ -1,4 +1,5 @@
 ﻿using IdentityAuthentication.Model.Configurations;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace IdentityAuthentication.TokenValidation.Services
@@ -16,48 +17,24 @@ namespace IdentityAuthentication.TokenValidation.Services
 
         public void InitializationConfiguration()
         {
-            IdentityAuthenticationConfiguration.AuthenticationEndpoints = _authenticationEndpointService.GetAuthenticationEndpointsAsync().Result;
-            IdentityAuthenticationConfiguration.AuthenticationConfiguration = GetAuthenticationConfigurationAsync().Result;
-            IdentityAuthenticationConfiguration.AccessTokenConfiguration = GetAccessTokenConfigurationAsync().Result;
-            IdentityAuthenticationConfiguration.RefreshTokenConfiguration = GetRefreshTokenConfigurationAsync().Result;
-            IdentityAuthenticationConfiguration.SecretKeyConfiguration = GetSecretKeyConfigurationAsync().Result;
-        }
+            TokenValidationConfiguration.AuthenticationEndpoints = _authenticationEndpointService.GetAuthenticationEndpointsAsync().Result;
 
-
-        private async Task<AuthenticationConfiguration> GetAuthenticationConfigurationAsync()
-        {
-            var endpoint = IdentityAuthenticationConfiguration.AuthenticationEndpoints.AutnenticationConfigurationEndpoint;
-            return await GetConfigurationAsync<AuthenticationConfiguration>(endpoint);
-        }
-
-        private async Task<AccessTokenConfiguration> GetAccessTokenConfigurationAsync()
-        {
-            var endpoint = IdentityAuthenticationConfiguration.AuthenticationEndpoints.AccessTokenConfigurationEndpoint;
-            return await GetConfigurationAsync<AccessTokenConfiguration>(endpoint);
-        }
-
-        private async Task<RefreshTokenConfiguration> GetRefreshTokenConfigurationAsync()
-        {
-            var endpoint = IdentityAuthenticationConfiguration.AuthenticationEndpoints.RefreshTokenConfigurationEndpoint;
-            return await GetConfigurationAsync<RefreshTokenConfiguration>(endpoint);
-        }
-
-        private async Task<SecretKeyConfiguration> GetSecretKeyConfigurationAsync()
-        {
-            var endpoint = IdentityAuthenticationConfiguration.AuthenticationEndpoints.SecretKeyConfigurationEndpoint;
-            var config = await GetConfigurationAsync<SecretKeyConfigurationBase>(endpoint);
-            return new SecretKeyConfiguration
+            var configuration = GetAuthenticationConfigurationAsync().Result;
+            TokenValidationConfiguration.AuthenticationConfiguration = configuration.AuthenticationConfiguration;
+            TokenValidationConfiguration.AccessTokenConfiguration = configuration.AccessTokenConfiguration;
+            TokenValidationConfiguration.RefreshTokenConfiguration = configuration.RefreshTokenConfiguration;
+            TokenValidationConfiguration.SecretKeyConfiguration = new SecretKeyConfiguration
             {
-                HmacSha256Key = config.HmacSha256Key,
-                RsaSignaturePublicKey = config.RsaSignaturePublicKey,
-                RsaDecryptPrivateKey = config.RsaDecryptPrivateKey
+                HmacSha256Key = configuration.SecretKeyConfiguration.HmacSha256Key,
+                RsaDecryptPrivateKey = configuration.SecretKeyConfiguration.RsaDecryptPrivateKey,
+                RsaSignaturePublicKey = configuration.SecretKeyConfiguration.RsaSignaturePublicKey
             };
         }
 
-        private async Task<TConfiguration> GetConfigurationAsync<TConfiguration>(string endpoint) where TConfiguration : class
-        {
-            if (string.IsNullOrEmpty(endpoint)) throw new ArgumentNullException(nameof(endpoint));
 
+        private async Task<IdentityAuthenticationConfiguration> GetAuthenticationConfigurationAsync()
+        {
+            var endpoint = TokenValidationConfiguration.AuthenticationEndpoints.AutnenticationConfigurationEndpoint;
             var httpClient = _httpClientFactory.CreateClient();
             var response = await httpClient.GetAsync(endpoint);
             if (response.IsSuccessStatusCode == false) throw new HttpRequestException($"Failed to request {endpoint}.");
@@ -65,8 +42,9 @@ namespace IdentityAuthentication.TokenValidation.Services
             var result = await response.Content.ReadAsStringAsync();
             if (string.IsNullOrEmpty(result)) throw new NullReferenceException($"{endpoint} the response result is empty.");
 
-            var config = JsonConvert.DeserializeObject<TConfiguration>(result);
+            var config = JsonConvert.DeserializeObject<IdentityAuthenticationConfiguration>(result);
             if (config == null) throw new NullReferenceException($"{endpoint} the response result deserialization failed.");
+
 
             return config;
         }

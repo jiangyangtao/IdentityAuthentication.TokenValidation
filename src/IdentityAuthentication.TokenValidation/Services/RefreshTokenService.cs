@@ -71,10 +71,10 @@ namespace IdentityAuthentication.TokenValidation.Services
             var r = DateTime.TryParse(expiration, out DateTime expirationTime);
             if (r == false) return;
 
-            var refreshTime = DateTime.Now.AddSeconds(IdentityAuthenticationConfiguration.AccessTokenConfiguration.RefreshTime);
+            var refreshTime = DateTime.Now.AddSeconds(TokenValidationConfiguration.AccessTokenConfiguration.RefreshTime);
             if (refreshTime < expirationTime) return;
 
-            if (IdentityAuthenticationConfiguration.AuthenticationConfiguration.EnableGrpcConnection)
+            if (TokenValidationConfiguration.AuthenticationConfiguration.EnableGrpcConnection)
             {
                 await GrpcRefreshTokenAsync();
                 return;
@@ -87,7 +87,7 @@ namespace IdentityAuthentication.TokenValidation.Services
         {
             var httpClient = _httpClientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Add(AuthorizationKey, Token);
-            var url = IdentityAuthenticationConfiguration.AuthenticationEndpoints.RefreshToeknEndpoint;
+            var url = TokenValidationConfiguration.AuthenticationEndpoints.RefreshToeknEndpoint;
             var response = await httpClient.PostAsync(url, EmptyContent);
             if (response.IsSuccessStatusCode == false) return;
 

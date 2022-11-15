@@ -3,7 +3,7 @@ using IdentityAuthentication.Model.Configurations;
 
 namespace IdentityAuthentication.TokenValidation
 {
-    internal class IdentityAuthenticationConfiguration
+    internal class TokenValidationConfiguration
     {
         public static AuthenticationEndpoints AuthenticationEndpoints { set; get; }
 
