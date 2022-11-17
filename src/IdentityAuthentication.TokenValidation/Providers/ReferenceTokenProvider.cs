@@ -1,4 +1,6 @@
-﻿using IdentityAuthentication.Model.Configurations;
+﻿using IdentityAuthentication.Model;
+using IdentityAuthentication.Model.Configurations;
+using IdentityAuthentication.Model.Extensions;
 using IdentityAuthentication.TokenValidation.Abstractions;
 using IdentityAuthentication.TokenValidation.Protos;
 using IdentityAuthentication.TokenValidation.Services;
@@ -9,10 +11,8 @@ namespace IdentityAuthentication.TokenValidation.Providers
     internal class ReferenceTokenProvider : ITokenProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
-
         private readonly TokenProto.TokenProtoClient _tokenProtoClient;
         private readonly TokenValidationResult _failTokenResult;
-
         private readonly RefreshTokenService _refreshTokenService;
 
         public ReferenceTokenProvider(
@@ -59,12 +59,12 @@ namespace IdentityAuthentication.TokenValidation.Providers
             var httpClient = _httpClientFactory.CreateClient();
             var url = TokenValidationConfiguration.AuthenticationEndpoints.AuthorizeEndpoint;
 
-            httpClient.DefaultRequestHeaders.Add("Authorization", token);
+            httpClient.DefaultRequestHeaders.Add(HttpHeaderKeyDefaults.Authorization, token);
             var response = await httpClient.PostAsync(url, RefreshTokenService.EmptyContent);
             if (response.IsSuccessStatusCode == false) return _failTokenResult;
 
             var json = await response.Content.ReadAsStringAsync();
-            if (string.IsNullOrEmpty(json)) return _failTokenResult;
+            if (json.IsNullOrEmpty()) return _failTokenResult;
 
             var result = await _refreshTokenService.BuildTokenSuccessResultAsync(json);
             return result;

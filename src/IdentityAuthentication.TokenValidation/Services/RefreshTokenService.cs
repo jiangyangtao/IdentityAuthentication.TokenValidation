@@ -6,8 +6,6 @@ using IdentityAuthentication.TokenValidation.Protos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Asn1.Ocsp;
-using System.Net.Http;
 using System.Net.Mime;
 using System.Security.Claims;
 using System.Text;
@@ -16,10 +14,6 @@ namespace IdentityAuthentication.TokenValidation.Services
 {
     internal class RefreshTokenService
     {
-        private const string AccessTokenKey = "access_token";
-        private const string RefreTokenHeaderKey = "refresh-token";
-        private const string ExpirationKey = ClaimTypes.Expiration;
-
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
 
@@ -49,7 +43,7 @@ namespace IdentityAuthentication.TokenValidation.Services
             {
                 var value = item.Value.ToString();
                 if (item.Key.Equals(nameof(grantType), StringComparison.OrdinalIgnoreCase)) grantType = value;
-                if (item.Key.Equals(ExpirationKey, StringComparison.OrdinalIgnoreCase)) expiration = value;
+                if (item.Key.Equals(ClaimKeyDefaults.Expiration, StringComparison.OrdinalIgnoreCase)) expiration = value;
 
                 claims.Add(new Claim(item.Key, value));
             }
@@ -66,7 +60,7 @@ namespace IdentityAuthentication.TokenValidation.Services
 
         public async Task RefreshTokenAsync(IEnumerable<Claim> claims)
         {
-            var expiration = claims.FirstOrDefault(a => a.Type == ExpirationKey);
+            var expiration = claims.FirstOrDefault(a => a.Type == ClaimKeyDefaults.Expiration);
             if (expiration != null) await RefreshTokenAsync(expiration.Value);
         }
 
@@ -100,13 +94,13 @@ namespace IdentityAuthentication.TokenValidation.Services
             if (response.IsSuccessStatusCode == false) return;
 
             var json = await response.Content.ReadAsStringAsync();
-            if (string.IsNullOrEmpty(json)) return;
+            if (json.IsNullOrEmpty()) return;
 
             var result = JObject.Parse(json);
-            if (result.ContainsKey(AccessTokenKey) == false) return;
+            if (result.ContainsKey(HttpHeaderKeyDefaults.AccessToken) == false) return;
 
-            var accessToken = result[AccessTokenKey].ToString();
-            if (string.IsNullOrEmpty(accessToken)) return;
+            var accessToken = result[HttpHeaderKeyDefaults.AccessToken].ToString();
+            if (accessToken.IsNullOrEmpty()) return;
 
             _httpContextAccessor.HttpContext?.Response.Headers.SetAccessToken(accessToken);
         }

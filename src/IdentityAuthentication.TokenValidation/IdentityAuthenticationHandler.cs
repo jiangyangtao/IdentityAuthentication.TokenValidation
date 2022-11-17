@@ -52,10 +52,10 @@ namespace IdentityAuthentication.TokenValidation
             if (allowAnonymous != null) return EmptyAuthenticateSuccessResult;
 
             var token = messageReceivedContext.Token;
-            if (string.IsNullOrEmpty(token))
+            if (token.IsNullOrEmpty())
             {
                 token = Request.Headers.GetAuthorization();
-                if (string.IsNullOrEmpty(token)) return AuthenticateResult.NoResult();
+                if (token.IsNullOrEmpty()) return AuthenticateResult.NoResult();
             }
             else
             {

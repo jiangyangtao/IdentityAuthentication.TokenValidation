@@ -1,4 +1,5 @@
-﻿using IdentityAuthentication.Model.Handlers;
+﻿using IdentityAuthentication.Model.Extensions;
+using IdentityAuthentication.Model.Handlers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
@@ -49,7 +50,7 @@ namespace IdentityAuthentication.TokenValidation
 
         public Uri GetAuthorityUri()
         {
-            if (string.IsNullOrEmpty(Authority)) throw new NullReferenceException($"{nameof(Authority)} is null or empty");
+            if (Authority.IsNullOrEmpty()) throw new NullReferenceException($"{nameof(Authority)} is null or empty");
 
             return new Uri(Authority);
         }

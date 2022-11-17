@@ -1,4 +1,5 @@
 ﻿using IdentityAuthentication.Model;
+using IdentityAuthentication.Model.Extensions;
 using Newtonsoft.Json;
 
 namespace IdentityAuthentication.TokenValidation.Services
@@ -21,7 +22,7 @@ namespace IdentityAuthentication.TokenValidation.Services
             if (response.IsSuccessStatusCode == false) throw new HttpRequestException("Failed to request authentication endpoints.");
 
             var result = await response.Content.ReadAsStringAsync();
-            if (string.IsNullOrEmpty(result)) throw new NullReferenceException("Authentication endpoints the response result is empty.");
+            if (result.IsNullOrEmpty()) throw new NullReferenceException("Authentication endpoints the response result is empty.");
 
             var endpoints = JsonConvert.DeserializeObject<AuthenticationEndpoints>(result);
             if (endpoints == null) throw new NullReferenceException("Authentication endpoints the response result deserialization failed.");

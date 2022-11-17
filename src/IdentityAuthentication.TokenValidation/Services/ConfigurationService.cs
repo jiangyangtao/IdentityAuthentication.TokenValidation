@@ -1,4 +1,5 @@
 ﻿using IdentityAuthentication.Model.Configurations;
+using IdentityAuthentication.Model.Extensions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
@@ -40,7 +41,7 @@ namespace IdentityAuthentication.TokenValidation.Services
             if (response.IsSuccessStatusCode == false) throw new HttpRequestException($"Failed to request {endpoint}.");
 
             var result = await response.Content.ReadAsStringAsync();
-            if (string.IsNullOrEmpty(result)) throw new NullReferenceException($"{endpoint} the response result is empty.");
+            if (result.IsNullOrEmpty()) throw new NullReferenceException($"{endpoint} the response result is empty.");
 
             var config = JsonConvert.DeserializeObject<IdentityAuthenticationConfiguration>(result);
             if (config == null) throw new NullReferenceException($"{endpoint} the response result deserialization failed.");
