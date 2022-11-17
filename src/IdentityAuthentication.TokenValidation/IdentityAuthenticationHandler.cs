@@ -1,4 +1,5 @@
-﻿using IdentityAuthentication.Model.Handlers;
+﻿using IdentityAuthentication.Model.Extensions;
+using IdentityAuthentication.Model.Handlers;
 using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;
 using Microsoft.AspNetCore.Authentication;
@@ -53,22 +54,13 @@ namespace IdentityAuthentication.TokenValidation
             var token = messageReceivedContext.Token;
             if (string.IsNullOrEmpty(token))
             {
-                token = Request.Headers.Authorization.ToString();
-                if (token.IsNullOrEmpty()) return AuthenticateResult.NoResult();
-
-                //  todo Replace extension the method
-                if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                {
-                    token = token["Bearer ".Length..].Trim();
-                }
-
+                token = Request.Headers.GetAuthorization();
                 if (string.IsNullOrEmpty(token)) return AuthenticateResult.NoResult();
             }
             else
             {
                 // 如果是 SignalR，则将 token 放到 header
-                //  todo Replace extension the method
-                Context.Request.Headers.Add("Authorization", token);
+                Context.Request.Headers.SetAuthorization(token);
             }
 
             var tokenValidationResult = await _tokenProvider.ValidateTokenAsync(token);

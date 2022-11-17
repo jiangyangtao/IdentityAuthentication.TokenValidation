@@ -1,8 +1,13 @@
 ﻿using Grpc.Core;
+using IdentityAuthentication.Model;
+using IdentityAuthentication.Model.Configurations;
+using IdentityAuthentication.Model.Extensions;
 using IdentityAuthentication.TokenValidation.Protos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Asn1.Ocsp;
+using System.Net.Http;
 using System.Net.Mime;
 using System.Security.Claims;
 using System.Text;
@@ -14,7 +19,6 @@ namespace IdentityAuthentication.TokenValidation.Services
         private const string AccessTokenKey = "access_token";
         private const string RefreTokenHeaderKey = "refresh-token";
         private const string ExpirationKey = ClaimTypes.Expiration;
-        private const string AuthorizationKey = "Authorization";
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -33,7 +37,7 @@ namespace IdentityAuthentication.TokenValidation.Services
 
         public static StringContent EmptyContent => new(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-        public Metadata BuildGrpcHeader(string token = "") => new() { { AuthorizationKey, string.IsNullOrEmpty(token) ? Token : token } };
+        public Metadata BuildGrpcHeader(string token = "") => new() { { HttpHeaderKeyDefaults.Authorization, token.IsNullOrEmpty() ? AccessToken : token } };
 
         public async Task<TokenValidationResult> BuildTokenSuccessResultAsync(string json)
         {
@@ -68,6 +72,8 @@ namespace IdentityAuthentication.TokenValidation.Services
 
         public async Task RefreshTokenAsync(string expiration)
         {
+            if (TokenValidationConfiguration.AuthenticationConfiguration.TokenType == TokenType.JWT && RefreshToken.IsNullOrEmpty()) return;
+
             var r = DateTime.TryParse(expiration, out DateTime expirationTime);
             if (r == false) return;
 
@@ -86,11 +92,11 @@ namespace IdentityAuthentication.TokenValidation.Services
         private async Task HttpRefreshTokenAsync()
         {
             var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Add(AuthorizationKey, Token);
-            // todo http header add refresh token
 
-            var url = TokenValidationConfiguration.AuthenticationEndpoints.RefreshToeknEndpoint;
-            var response = await httpClient.PostAsync(url, EmptyContent);
+            httpClient.DefaultRequestHeaders.SetAuthorization(AccessToken);
+            if (RefreshToken.NotNullAndEmpty()) httpClient.DefaultRequestHeaders.SetRefreshToken(RefreshToken);
+
+            var response = await httpClient.PostAsync(TokenValidationConfiguration.AuthenticationEndpoints.RefreshToeknEndpoint, EmptyContent);
             if (response.IsSuccessStatusCode == false) return;
 
             var json = await response.Content.ReadAsStringAsync();
@@ -102,38 +108,25 @@ namespace IdentityAuthentication.TokenValidation.Services
             var accessToken = result[AccessTokenKey].ToString();
             if (string.IsNullOrEmpty(accessToken)) return;
 
-            // todo Headers.TryAdd replace headers the extension method
-            _httpContextAccessor.HttpContext?.Response.Headers.TryAdd(RefreTokenHeaderKey, accessToken);
+            _httpContextAccessor.HttpContext?.Response.Headers.SetAccessToken(accessToken);
         }
+
 
         private async Task GrpcRefreshTokenAsync()
         {
             try
             {
                 var headers = BuildGrpcHeader();
-                var r = await _tokenProtoClient.RefreshAsync(new TokenRequest { Token = Token }, headers);
+                var r = await _tokenProtoClient.RefreshAsync(new TokenRequest { Token = RefreshToken }, headers);
                 if (r.Result == false) return;
 
-                // todo Headers.TryAdd replace headers the extension method
-                _httpContextAccessor.HttpContext?.Response.Headers.TryAdd(RefreTokenHeaderKey, r.AccessToken);
+                _httpContextAccessor.HttpContext?.Response.Headers.SetAccessToken(r.AccessToken);
             }
             finally { }
         }
 
-        private string Token
-        {
-            get
-            {
-                // todo Get Authorization replace headers the extension method
-                var token = _httpContextAccessor.HttpContext?.Request.Headers.Authorization.ToString();
-                if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                {
-                    token = token["Bearer ".Length..].Trim();
-                }
+        private string AccessToken => _httpContextAccessor.HttpContext?.Request.Headers.GetAuthorization();
 
-                return token;
-            }
-        }
-
+        private string RefreshToken => _httpContextAccessor.HttpContext?.Request.Headers.GetRefreshToken();
     }
 }

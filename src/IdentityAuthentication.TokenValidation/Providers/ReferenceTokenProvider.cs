@@ -40,7 +40,7 @@ namespace IdentityAuthentication.TokenValidation.Providers
         {
             try
             {
-                var headers = _refreshTokenService.BuildGrpcHeader(token);
+                var headers = _refreshTokenService.BuildGrpcHeader();
                 var r = await _tokenProtoClient.AuthorizeAsync(new TokenRequest { Token = token }, headers);
                 if (r.Result == false) return new TokenValidationResult
                 {
