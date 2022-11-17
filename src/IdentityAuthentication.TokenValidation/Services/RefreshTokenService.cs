@@ -87,6 +87,8 @@ namespace IdentityAuthentication.TokenValidation.Services
         {
             var httpClient = _httpClientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Add(AuthorizationKey, Token);
+            // todo http header add refresh token
+
             var url = TokenValidationConfiguration.AuthenticationEndpoints.RefreshToeknEndpoint;
             var response = await httpClient.PostAsync(url, EmptyContent);
             if (response.IsSuccessStatusCode == false) return;
@@ -100,6 +102,7 @@ namespace IdentityAuthentication.TokenValidation.Services
             var accessToken = result[AccessTokenKey].ToString();
             if (string.IsNullOrEmpty(accessToken)) return;
 
+            // todo Headers.TryAdd replace headers the extension method
             _httpContextAccessor.HttpContext?.Response.Headers.TryAdd(RefreTokenHeaderKey, accessToken);
         }
 
@@ -111,6 +114,7 @@ namespace IdentityAuthentication.TokenValidation.Services
                 var r = await _tokenProtoClient.RefreshAsync(new TokenRequest { Token = Token }, headers);
                 if (r.Result == false) return;
 
+                // todo Headers.TryAdd replace headers the extension method
                 _httpContextAccessor.HttpContext?.Response.Headers.TryAdd(RefreTokenHeaderKey, r.AccessToken);
             }
             finally { }
@@ -120,6 +124,7 @@ namespace IdentityAuthentication.TokenValidation.Services
         {
             get
             {
+                // todo Get Authorization replace headers the extension method
                 var token = _httpContextAccessor.HttpContext?.Request.Headers.Authorization.ToString();
                 if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                 {

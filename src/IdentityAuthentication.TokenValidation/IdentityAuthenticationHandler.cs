@@ -56,6 +56,7 @@ namespace IdentityAuthentication.TokenValidation
                 token = Request.Headers.Authorization.ToString();
                 if (token.IsNullOrEmpty()) return AuthenticateResult.NoResult();
 
+                //  todo Replace extension the method
                 if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                 {
                     token = token["Bearer ".Length..].Trim();
@@ -66,6 +67,7 @@ namespace IdentityAuthentication.TokenValidation
             else
             {
                 // 如果是 SignalR，则将 token 放到 header
+                //  todo Replace extension the method
                 Context.Request.Headers.Add("Authorization", token);
             }
 
