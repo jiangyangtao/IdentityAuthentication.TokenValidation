@@ -4,6 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Yangtao</Authors>
+    <Title>The TokenValidation for IdentityAuthentication</Title>
+    <Description></Description>
+    <PackageProjectUrl>https://github.com/jiangyangtao/IdentityAuthentication.TokenValidation</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jiangyangtao/IdentityAuthentication.TokenValidation</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
