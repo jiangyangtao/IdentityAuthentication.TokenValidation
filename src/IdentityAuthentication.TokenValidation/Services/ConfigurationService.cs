@@ -1,6 +1,5 @@
 ﻿using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.Model.Extensions;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace IdentityAuthentication.TokenValidation.Services
@@ -18,9 +17,28 @@ namespace IdentityAuthentication.TokenValidation.Services
 
         public void InitializationConfiguration()
         {
-            TokenValidationConfiguration.AuthenticationEndpoints = _authenticationEndpointService.GetAuthenticationEndpointsAsync().Result;
+            try
+            {
+                TokenValidationConfiguration.AuthenticationEndpoints = _authenticationEndpointService.GetAuthenticationEndpointsAsync().Result;
 
-            var configuration = GetAuthenticationConfigurationAsync().Result;
+                var configuration = GetAuthenticationConfigurationAsync().Result;
+                SetConfiguration(configuration);
+            }
+            catch (Exception) { }
+        }
+
+        public async Task InitializationConfigurationaAsync()
+        {
+            if (TokenValidationConfiguration.HasConfigValue == false)
+            {
+                TokenValidationConfiguration.AuthenticationEndpoints = await _authenticationEndpointService.GetAuthenticationEndpointsAsync();
+                var configuration = await GetAuthenticationConfigurationAsync();
+                SetConfiguration(configuration);
+            }
+        }
+
+        private static void SetConfiguration(IdentityAuthenticationConfiguration configuration)
+        {
             TokenValidationConfiguration.AuthenticationConfiguration = configuration.AuthenticationConfiguration;
             TokenValidationConfiguration.AccessTokenConfiguration = configuration.AccessTokenConfiguration;
             TokenValidationConfiguration.RefreshTokenConfiguration = configuration.RefreshTokenConfiguration;
@@ -31,7 +49,6 @@ namespace IdentityAuthentication.TokenValidation.Services
                 RsaSignaturePublicKey = configuration.SecretKeyConfiguration.RsaSignaturePublicKey
             };
         }
-
 
         private async Task<IdentityAuthenticationConfiguration> GetAuthenticationConfigurationAsync()
         {

@@ -1,5 +1,6 @@
 ﻿using IdentityAuthentication.Model;
 using IdentityAuthentication.Model.Configurations;
+using Microsoft.Extensions.Configuration;
 
 namespace IdentityAuthentication.TokenValidation
 {
@@ -14,5 +15,16 @@ namespace IdentityAuthentication.TokenValidation
         public static RefreshTokenConfiguration RefreshTokenConfiguration { set; get; }
 
         public static SecretKeyConfiguration SecretKeyConfiguration { set; get; }
+
+        public static bool HasConfigValue
+        {
+            get
+            {
+                return AuthenticationConfiguration != null &&
+                        AccessTokenConfiguration != null &&
+                        RefreshTokenConfiguration != null &&
+                        SecretKeyConfiguration != null;
+            }
+        }
     }
 }

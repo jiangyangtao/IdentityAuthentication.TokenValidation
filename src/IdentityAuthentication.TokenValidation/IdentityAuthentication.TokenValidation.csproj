@@ -10,6 +10,7 @@
     <Description></Description>
     <PackageProjectUrl>https://github.com/jiangyangtao/IdentityAuthentication.TokenValidation</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jiangyangtao/IdentityAuthentication.TokenValidation</RepositoryUrl>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

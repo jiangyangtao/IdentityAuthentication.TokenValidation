@@ -2,6 +2,7 @@
 using IdentityAuthentication.Model.Handlers;
 using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;
+using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,18 +16,19 @@ namespace IdentityAuthentication.TokenValidation
 {
     internal class IdentityAuthenticationHandler : AuthenticationHandler<IdentityAuthenticationOptions>
     {
-        private readonly ITokenProvider _tokenProvider;
-
+        private readonly ITokenProviderFactory _tokenProviderFactory;
+        private readonly ConfigurationService _configurationService;
         private readonly AuthenticateResult EmptyAuthenticateSuccessResult;
 
         public IdentityAuthenticationHandler(IOptionsMonitor<IdentityAuthenticationOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            ITokenProviderFactory tokenProviderFactory) : base(options, logger, encoder, clock)
+            ITokenProviderFactory tokenProviderFactory,
+            ConfigurationService configurationService) : base(options, logger, encoder, clock)
         {
-            _tokenProvider = tokenProviderFactory.CreateTokenProvider();
-
+            _tokenProviderFactory = tokenProviderFactory;
+            _configurationService = configurationService;
 
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(), IdentityAuthenticationDefaults.AuthenticationScheme);
             EmptyAuthenticateSuccessResult = AuthenticateResult.Success(ticket);
@@ -40,8 +42,9 @@ namespace IdentityAuthentication.TokenValidation
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var messageReceivedContext = new MessageReceivedContext(Context, Scheme, Options);
+            await _configurationService.InitializationConfigurationaAsync();
 
+            var messageReceivedContext = new MessageReceivedContext(Context, Scheme, Options);
             await Events.MessageReceived(messageReceivedContext);
             if (messageReceivedContext.Result != null)
             {
@@ -63,7 +66,7 @@ namespace IdentityAuthentication.TokenValidation
                 Context.Request.Headers.SetAuthorization(token);
             }
 
-            var tokenValidationResult = await _tokenProvider.ValidateTokenAsync(token);
+            var tokenValidationResult = await _tokenProviderFactory.CreateTokenProvider().ValidateTokenAsync(token);
             if (tokenValidationResult.IsValid == false) return AuthenticateResult.NoResult();
 
 
