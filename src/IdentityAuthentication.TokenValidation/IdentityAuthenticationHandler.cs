@@ -51,7 +51,10 @@ namespace IdentityAuthentication.TokenValidation
                 return messageReceivedContext.Result;
             }
 
-            var allowAnonymous = Context.GetEndpoint().Metadata.GetMetadata<IAllowAnonymous>();
+            var endpoint = Context.GetEndpoint();
+            if (endpoint == null) return AuthenticateResult.NoResult();
+
+            var allowAnonymous = endpoint.Metadata.GetMetadata<IAllowAnonymous>();
             if (allowAnonymous != null) return EmptyAuthenticateSuccessResult;
 
             var token = messageReceivedContext.Token;
