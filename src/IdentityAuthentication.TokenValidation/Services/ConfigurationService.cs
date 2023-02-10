@@ -52,7 +52,7 @@ namespace IdentityAuthentication.TokenValidation.Services
 
         private async Task<IdentityAuthenticationConfiguration> GetAuthenticationConfigurationAsync()
         {
-            var endpoint = TokenValidationConfiguration.AuthenticationEndpoints.AutnenticationConfigurationEndpoint;
+            var endpoint = TokenValidationConfiguration.AuthenticationEndpoints.AuthenticationConfigurationEndpoint;
             var httpClient = _httpClientFactory.CreateClient();
             var response = await httpClient.GetAsync(endpoint);
             if (response.IsSuccessStatusCode == false) throw new HttpRequestException($"Failed to request {endpoint}.");
