@@ -73,7 +73,8 @@ namespace IdentityAuthentication.TokenValidation
             {
                 return new HttpClientHandler
                 {
-                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                    CheckCertificateRevocationList = false,
                 };
             });
             services.AddHttpContextAccessor();
