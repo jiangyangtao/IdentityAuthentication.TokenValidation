@@ -1,10 +1,13 @@
-﻿using IdentityAuthentication.Model.Handles;
+﻿using Grpc.Core;
+using Grpc.Net.Client.Configuration;
+using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;
 using IdentityAuthentication.TokenValidation.Protos;
 using IdentityAuthentication.TokenValidation.Providers;
 using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace IdentityAuthentication.TokenValidation
 {
@@ -41,8 +44,38 @@ namespace IdentityAuthentication.TokenValidation
             services.AddGrpcClient<TokenProto.TokenProtoClient>(options =>
             {
                 options.Address = IdentityAuthenticationOptions.AuthorityUrl;
+                options.ChannelOptionsActions.Add((channelOptions) =>
+                {
+                    // 允许自签名证书
+                    channelOptions.HttpHandler = new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                    };
+
+                    var serviceConfig = new ServiceConfig();
+                    serviceConfig.MethodConfigs.Add(new MethodConfig
+                    {
+                        Names = { MethodName.Default },
+                        RetryPolicy = new RetryPolicy       // 重试策略
+                        {
+                            MaxAttempts = 5,
+                            InitialBackoff = TimeSpan.FromSeconds(1),
+                            MaxBackoff = TimeSpan.FromSeconds(5),
+                            BackoffMultiplier = 1.5,
+                            RetryableStatusCodes = { StatusCode.Unavailable }
+                        }
+                    });
+                    channelOptions.ServiceConfig = serviceConfig;
+                });
             });
 
+            services.AddHttpClient(Options.DefaultName).ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+            });
             services.AddHttpContextAccessor();
 
             return services;

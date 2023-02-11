@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAuthentication(options =>
 {
-    options.Authority = "https://localhost:7045";
+    options.Authority = "https://43.139.151.64:5100/";
     options.Events = new IdentityAuthenticationEvents
     {
         OnMessageReceived = context =>
