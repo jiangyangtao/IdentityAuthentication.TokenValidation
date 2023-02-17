@@ -29,7 +29,7 @@ namespace IdentityAuthentication.TokenValidation.Providers
             _claimHandler = claimHandler;
         }
 
-        public TokenType TokenType => TokenType.JWT;     
+        public TokenType TokenType => TokenType.JWT;
 
 
         public async Task<TokenValidationResult> ValidateTokenAsync(string token)
@@ -37,7 +37,7 @@ namespace IdentityAuthentication.TokenValidation.Providers
             token = HandleTokenDecrypt(token);
 
             var tokenValidationResult = await _jwtSecurityTokenHandler.ValidateTokenAsync(token, _tokenValidationParameters);
-            await _claimHandler.RefreshTokenAsync(tokenValidationResult.ClaimsIdentity.Claims);
+            if (tokenValidationResult.IsValid) await _claimHandler.RefreshTokenAsync(tokenValidationResult.ClaimsIdentity.Claims);
 
             return tokenValidationResult;
         }
