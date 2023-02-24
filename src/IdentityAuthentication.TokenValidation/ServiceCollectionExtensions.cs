@@ -13,11 +13,11 @@ namespace IdentityAuthentication.TokenValidation
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddAuthentication(this IServiceCollection services, Action<IdentityAuthenticationOptions> configureOptions)
+        public static IServiceCollection AddAuthentication(this IServiceCollection services, Action<IdentityAuthenticationOptions> action)
         {
-            var config = new IdentityAuthenticationOptions();
-            configureOptions(config);
-            IdentityAuthenticationOptions.AuthorityUrl = config.GetAuthorityUri();
+            var authenticationOptions = new IdentityAuthenticationOptions();
+            action(authenticationOptions);
+            IdentityAuthenticationOptions.AuthorityUrl = authenticationOptions.GetAuthorityUri();
 
             services.AddAuthentication(options =>
             {
@@ -29,9 +29,9 @@ namespace IdentityAuthentication.TokenValidation
                 options.DefaultSignOutScheme = IdentityAuthenticationDefaults.AuthenticationScheme;
             }).AddScheme<IdentityAuthenticationOptions, IdentityAuthenticationHandler>(IdentityAuthenticationDefaults.AuthenticationScheme, options =>
             {
-                options.Events = config.Events;
-                options.Authority = config.Authority;
-            });
+                options.Events = authenticationOptions.Events;
+                options.Authority = authenticationOptions.Authority;
+            }); 
 
             services.AddSingleton<ITokenProvider, JwtTokenProvider>();
             services.AddSingleton<ITokenProvider, ReferenceTokenProvider>();

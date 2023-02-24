@@ -42,7 +42,8 @@ namespace IdentityAuthentication.TokenValidation
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            await _configurationService.InitializationConfigurationaAsync();
+            var endpoint = Context.GetEndpoint();
+            if (endpoint == null) return AuthenticateResult.NoResult();
 
             var messageReceivedContext = new MessageReceivedContext(Context, Scheme, Options);
             await Events.MessageReceived(messageReceivedContext);
@@ -51,11 +52,10 @@ namespace IdentityAuthentication.TokenValidation
                 return messageReceivedContext.Result;
             }
 
-            var endpoint = Context.GetEndpoint();
-            if (endpoint == null) return AuthenticateResult.NoResult();
-
             var allowAnonymous = endpoint.Metadata.GetMetadata<IAllowAnonymous>();
             if (allowAnonymous != null) return EmptyAuthenticateSuccessResult;
+
+            await _configurationService.InitializationConfigurationaAsync();
 
             var token = messageReceivedContext.Token;
             if (token.IsNullOrEmpty())
