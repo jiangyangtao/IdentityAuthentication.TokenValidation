@@ -9,7 +9,7 @@ namespace IdentityAuthentication.TokenValidation
     {
         public string Authority { get; set; }
 
-        internal static Uri AuthorityUrl { set; get; }
+        public bool EnableJWTRefreshToken { set; get; } = true;
 
         public new IdentityAuthenticationEvents Events
         {
@@ -54,5 +54,12 @@ namespace IdentityAuthentication.TokenValidation
 
             return new Uri(Authority);
         }
+    }
+
+    internal class TokenValidationOptions
+    {
+        public Uri AuthorityUrl { set; get; }
+
+        public bool EnableJWTRefreshToken { set; get; } = true;
     }
 }

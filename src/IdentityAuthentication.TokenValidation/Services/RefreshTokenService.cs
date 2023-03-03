@@ -1,9 +1,10 @@
 ﻿using Grpc.Core;
+using IdentityAuthentication.Application.Grpc.Provider;
 using IdentityAuthentication.Model;
 using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.Model.Extensions;
-using IdentityAuthentication.TokenValidation.Protos;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using System.Net.Mime;
@@ -16,17 +17,20 @@ namespace IdentityAuthentication.TokenValidation.Services
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly TokenValidationOptions _validationOptions;
+        private readonly TokenGrpcProvider.TokenGrpcProviderClient _tokenGrpcProvider;
 
-        private readonly TokenProto.TokenProtoClient _tokenProtoClient;
 
         public RefreshTokenService(
             IHttpContextAccessor httpContextAccessor,
             IHttpClientFactory httpClientFactory,
-            TokenProto.TokenProtoClient tokenProtoClient)
+            IOptions<TokenValidationOptions> tokenValidationOptions,
+            TokenGrpcProvider.TokenGrpcProviderClient tokenGrpcProvider)
         {
             _httpContextAccessor = httpContextAccessor;
             _httpClientFactory = httpClientFactory;
-            _tokenProtoClient = tokenProtoClient;
+            _validationOptions = tokenValidationOptions.Value;
+            _tokenGrpcProvider = tokenGrpcProvider;
         }
 
         public static StringContent EmptyContent => new(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
@@ -66,6 +70,7 @@ namespace IdentityAuthentication.TokenValidation.Services
 
         public async Task RefreshTokenAsync(string expiration)
         {
+            if (_validationOptions.EnableJWTRefreshToken == false) return;
             if (TokenValidationConfiguration.AuthenticationConfiguration.TokenType == TokenType.JWT && RefreshToken.IsNullOrEmpty()) return;
 
             var r = DateTime.TryParse(expiration, out DateTime expirationTime);
@@ -111,10 +116,11 @@ namespace IdentityAuthentication.TokenValidation.Services
             try
             {
                 var headers = BuildGrpcHeader();
-                var r = await _tokenProtoClient.RefreshAsync(new TokenRequest { Token = RefreshToken }, headers);
+                var r = await _tokenGrpcProvider.RefreshAsync(new RefreshTokenRequest { RefreshToken = RefreshToken }, headers);
                 if (r.Result == false) return;
 
-                _httpContextAccessor.HttpContext?.Response.Headers.SetAccessToken(r.AccessToken);
+                if (r.AccessToken.NotNullAndEmpty())
+                    _httpContextAccessor.HttpContext?.Response.Headers.SetAccessToken(r.AccessToken);
             }
             finally { }
         }

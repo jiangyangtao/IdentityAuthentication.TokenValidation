@@ -1,8 +1,8 @@
-﻿using IdentityAuthentication.Model;
+﻿using IdentityAuthentication.Application.Grpc.Provider;
+using IdentityAuthentication.Model;
 using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.Model.Extensions;
 using IdentityAuthentication.TokenValidation.Abstractions;
-using IdentityAuthentication.TokenValidation.Protos;
 using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,17 +11,17 @@ namespace IdentityAuthentication.TokenValidation.Providers
     internal class ReferenceTokenProvider : ITokenProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly TokenProto.TokenProtoClient _tokenProtoClient;
+        private readonly TokenGrpcProvider.TokenGrpcProviderClient _tokenGrpcProvider;
         private readonly TokenValidationResult _failTokenResult;
         private readonly RefreshTokenService _refreshTokenService;
 
         public ReferenceTokenProvider(
             IHttpClientFactory httpClientFactory,
-            TokenProto.TokenProtoClient tokenProtoClient,
+            TokenGrpcProvider.TokenGrpcProviderClient okenGrpcProvider,
             RefreshTokenService refreshTokenService)
         {
             _httpClientFactory = httpClientFactory;
-            _tokenProtoClient = tokenProtoClient;
+            _tokenGrpcProvider = okenGrpcProvider;
             _refreshTokenService = refreshTokenService;
             _failTokenResult = new TokenValidationResult { IsValid = false, };
         }
@@ -41,7 +41,7 @@ namespace IdentityAuthentication.TokenValidation.Providers
             try
             {
                 var headers = _refreshTokenService.BuildGrpcHeader();
-                var r = await _tokenProtoClient.AuthorizeAsync(new TokenRequest { Token = token }, headers);
+                var r = await _tokenGrpcProvider.AuthorizeAsync(new AccessTokenRequest { AccessToken = token }, headers);
                 if (r.Result == false) return new TokenValidationResult
                 {
                     IsValid = r.Result

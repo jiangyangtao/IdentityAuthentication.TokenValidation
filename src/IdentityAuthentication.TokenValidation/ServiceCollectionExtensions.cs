@@ -1,8 +1,8 @@
 ﻿using Grpc.Core;
 using Grpc.Net.Client.Configuration;
+using IdentityAuthentication.Application.Grpc.Provider;
 using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;
-using IdentityAuthentication.TokenValidation.Protos;
 using IdentityAuthentication.TokenValidation.Providers;
 using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.AspNetCore.Builder;
@@ -17,8 +17,13 @@ namespace IdentityAuthentication.TokenValidation
         {
             var authenticationOptions = new IdentityAuthenticationOptions();
             action(authenticationOptions);
-            IdentityAuthenticationOptions.AuthorityUrl = authenticationOptions.GetAuthorityUri();
 
+            var authorityUrl = authenticationOptions.GetAuthorityUri();
+            services.Configure<TokenValidationOptions>(options =>
+            {
+                options.AuthorityUrl = authorityUrl;
+                options.EnableJWTRefreshToken = authenticationOptions.EnableJWTRefreshToken;
+            });
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = IdentityAuthenticationDefaults.AuthenticationScheme;
@@ -31,7 +36,7 @@ namespace IdentityAuthentication.TokenValidation
             {
                 options.Events = authenticationOptions.Events;
                 options.Authority = authenticationOptions.Authority;
-            }); 
+            });
 
             services.AddSingleton<ITokenProvider, JwtTokenProvider>();
             services.AddSingleton<ITokenProvider, ReferenceTokenProvider>();
@@ -41,9 +46,9 @@ namespace IdentityAuthentication.TokenValidation
             services.AddSingleton<ConfigurationService>();
             services.AddSingleton<AuthenticationEndpointService>();
 
-            services.AddGrpcClient<TokenProto.TokenProtoClient>(options =>
+            services.AddGrpcClient<TokenGrpcProvider.TokenGrpcProviderClient>(options =>
             {
-                options.Address = IdentityAuthenticationOptions.AuthorityUrl;
+                options.Address = authorityUrl;
                 options.ChannelOptionsActions.Add((channelOptions) =>
                 {
                     // 允许自签名证书

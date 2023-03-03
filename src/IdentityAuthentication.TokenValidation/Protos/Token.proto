@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "IdentityAuthentication.Application.Grpc.Provider";
+
+package TokenProvider;
+
+service TokenGrpcProvider {
+	rpc Refresh(RefreshTokenRequest) returns (RefreshTokenResponse);
+	rpc Authorize(AccessTokenRequest) returns (AuthorizeResponse);
+}
+
+message RefreshTokenRequest{
+	string RefreshToken=1;
+}
+
+message AccessTokenRequest{
+	string AccessToken=1;
+}
+
+message RefreshTokenResponse {
+	bool Result = 1;
+	string AccessToken = 2;
+}
+
+message AuthorizeResponse{
+	bool Result = 1;
+	string Claims = 2;
+}
