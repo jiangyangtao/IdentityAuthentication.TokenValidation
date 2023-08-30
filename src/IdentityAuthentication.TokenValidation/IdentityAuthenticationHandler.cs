@@ -46,7 +46,8 @@ namespace IdentityAuthentication.TokenValidation
             if (endpoint == null) return AuthenticateResult.NoResult();
 
             var messageReceivedContext = new MessageReceivedContext(Context, Scheme, Options);
-            await Events.MessageReceived(messageReceivedContext);
+            if (Events != null && Events.MessageReceived != null) await Events.MessageReceived(messageReceivedContext);
+
             if (messageReceivedContext.Result != null)
             {
                 return messageReceivedContext.Result;
@@ -80,7 +81,7 @@ namespace IdentityAuthentication.TokenValidation
                 SecurityToken = tokenValidationResult.SecurityToken
             };
 
-            await Events.OnTokenValidated(tokenValidatedContext);
+            if (Events != null && Events.OnTokenValidated != null) await Events.OnTokenValidated(tokenValidatedContext);
             if (tokenValidatedContext.Result != null) return tokenValidatedContext.Result;
 
             tokenValidatedContext.Success();

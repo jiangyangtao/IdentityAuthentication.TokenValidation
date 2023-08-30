@@ -16,6 +16,11 @@ namespace IdentityAuthentication.TokenValidation
 {
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddIdentityAuthentication(this IServiceCollection services) => AddAuthentication(services);
+
+        public static IServiceCollection AddIdentityAuthentication(this IServiceCollection services, IdentityAuthenticationEvents authenticationEvents)
+            => AddAuthentication(services, authenticationEvents);
+
         public static IServiceCollection AddAuthentication(this IServiceCollection services)
         {
             var endpoing = services.GetEndpoint();
