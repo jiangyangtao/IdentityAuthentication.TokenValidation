@@ -36,7 +36,12 @@ namespace IdentityAuthentication.TokenValidation
 
         protected new IdentityAuthenticationEvents Events
         {
-            get => (IdentityAuthenticationEvents)base.Events!;
+            get
+            {
+                if (base.Events == null) return null;
+
+                return base.Events! as IdentityAuthenticationEvents;
+            }
             set => base.Events = value;
         }
 
