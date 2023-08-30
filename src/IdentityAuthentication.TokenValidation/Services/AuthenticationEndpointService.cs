@@ -28,9 +28,7 @@ namespace IdentityAuthentication.TokenValidation.Services
             if (result.IsNullOrEmpty()) throw new NullReferenceException("Authentication endpoints the response result is empty.");
 
             var endpoints = JsonConvert.DeserializeObject<AuthenticationEndpoints>(result);
-            if (endpoints == null) throw new NullReferenceException("Authentication endpoints the response result deserialization failed.");
-
-            return endpoints;
+            return endpoints ?? throw new NullReferenceException("Authentication endpoints the response result deserialization failed.");
         }
     }
 }

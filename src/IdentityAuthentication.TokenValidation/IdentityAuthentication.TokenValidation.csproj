@@ -10,11 +10,11 @@
     <Description></Description>
     <PackageProjectUrl>https://github.com/jiangyangtao/IdentityAuthentication.TokenValidation</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jiangyangtao/IdentityAuthentication.TokenValidation</RepositoryUrl>
-    <Version>1.0.9</Version>
+    <Version>1.0.10</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityAuthentication.Model" Version="1.1.5" />
+    <PackageReference Include="IdentityAuthentication.Model" Version="1.1.7" />
 	<PackageReference Include="Google.Protobuf" Version="3.21.0" />
 	<PackageReference Include="Grpc.Net.ClientFactory" Version="2.46.0" />
 	<PackageReference Include="Grpc.Tools" Version="2.46.3">

@@ -61,10 +61,7 @@ namespace IdentityAuthentication.TokenValidation.Services
             if (result.IsNullOrEmpty()) throw new NullReferenceException($"{endpoint} the response result is empty.");
 
             var config = JsonConvert.DeserializeObject<IdentityAuthenticationConfiguration>(result);
-            if (config == null) throw new NullReferenceException($"{endpoint} the response result deserialization failed.");
-
-
-            return config;
+            return config ?? throw new NullReferenceException($"{endpoint} the response result deserialization failed.");
         }
     }
 }
