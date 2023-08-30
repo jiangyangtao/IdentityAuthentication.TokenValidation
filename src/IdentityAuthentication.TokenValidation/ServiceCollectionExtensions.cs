@@ -1,11 +1,14 @@
 ﻿using Grpc.Core;
 using Grpc.Net.Client.Configuration;
 using IdentityAuthentication.Application.Grpc.Provider;
+using IdentityAuthentication.Model.Extensions;
+using IdentityAuthentication.Model.Handlers;
 using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;
 using IdentityAuthentication.TokenValidation.Providers;
 using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -13,10 +16,44 @@ namespace IdentityAuthentication.TokenValidation
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddAuthentication(this IServiceCollection services, Action<IdentityAuthenticationOptions> action)
+        public static IServiceCollection AddAuthentication(this IServiceCollection services)
+        {
+            var endpoing = services.GetEndpoint();
+            return AddAuthentication(services, endpoing);
+        }
+
+        public static IServiceCollection AddAuthentication(this IServiceCollection services, IdentityAuthenticationEvents authenticationEvents)
+        {
+            var endpoing = services.GetEndpoint();
+            return AddAuthentication(services, endpoing, authenticationEvents);
+        }
+
+        public static IServiceCollection AddAuthentication(this IServiceCollection services, string authenticationEndpoint)
+        {
+            if (authenticationEndpoint.IsNullOrEmpty()) throw new ArgumentNullException(nameof(authenticationEndpoint));
+
+            return AddAuthentication(services, options =>
+            {
+                options.Authority = authenticationEndpoint;
+            });
+        }
+
+        public static IServiceCollection AddAuthentication(this IServiceCollection services, string authenticationEndpoint, IdentityAuthenticationEvents authenticationEvents)
+        {
+            if (authenticationEndpoint.IsNullOrEmpty()) throw new ArgumentNullException(nameof(authenticationEndpoint));
+
+            return AddAuthentication(services, options =>
+            {
+                options.Authority = authenticationEndpoint;
+
+                if (authenticationEvents != null) options.Events = authenticationEvents;
+            });
+        }
+
+        public static IServiceCollection AddAuthentication(this IServiceCollection services, Action<IdentityAuthenticationOptions> optionsAction)
         {
             var authenticationOptions = new IdentityAuthenticationOptions();
-            action(authenticationOptions);
+            optionsAction(authenticationOptions);
 
             var authorityUrl = authenticationOptions.GetAuthorityUri();
             services.Configure<TokenValidationOptions>(options =>
@@ -94,6 +131,16 @@ namespace IdentityAuthentication.TokenValidation
 
             configurationService.InitializationConfiguration();
             return builder;
+        }
+
+        private static string GetEndpoint(this IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            var authenticationConfig = configuration.GetSection("Authentication") ?? throw new KeyNotFoundException("Configuration could not find Authentication");
+            var endpoint = authenticationConfig.GetValue<string>("Endpoint");
+
+            return endpoint ?? throw new KeyNotFoundException("Configuration could not find Endpoint of Authentication");
         }
     }
 }
