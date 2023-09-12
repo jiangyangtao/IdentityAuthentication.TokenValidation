@@ -7,6 +7,7 @@ using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;
 using IdentityAuthentication.TokenValidation.Services;
 using IdentityAuthentication.TokenValidation.TokenProviders;
+using IdentityAuthentication.TokenValidation.TokenValidate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -83,6 +84,10 @@ namespace IdentityAuthentication.TokenValidation
             services.AddSingleton<ITokenProvider, JwtTokenProvider>();
             services.AddSingleton<ITokenProvider, ReferenceTokenProvider>();
             services.AddSingleton<ITokenProviderFactory, TokenProviderFactory>();
+
+            services.AddSingleton<ITokenValidateFactory, TokenValidateFactory>();
+            services.AddSingleton<ITokenValidateProvider, HttpValidateProvider>();
+            services.AddSingleton<ITokenValidateProvider, GrpcValidateProvider>();
 
             services.AddSingleton<RefreshTokenService>();
             services.AddSingleton<ConfigurationService>();
