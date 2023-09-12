@@ -5,7 +5,7 @@ using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace IdentityAuthentication.TokenValidation.Providers
+namespace IdentityAuthentication.TokenValidation.TokenProviders
 {
     internal class JwtTokenProvider : ITokenProvider
     {

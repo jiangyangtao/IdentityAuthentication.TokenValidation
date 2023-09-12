@@ -1,7 +1,7 @@
 ﻿using IdentityAuthentication.TokenValidation.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IdentityAuthentication.TokenValidation.Providers
+namespace IdentityAuthentication.TokenValidation.TokenProviders
 {
     internal class TokenProviderFactory : ITokenProviderFactory
     {

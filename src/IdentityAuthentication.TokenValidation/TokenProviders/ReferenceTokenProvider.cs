@@ -6,7 +6,7 @@ using IdentityAuthentication.TokenValidation.Abstractions;
 using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.IdentityModel.Tokens;
 
-namespace IdentityAuthentication.TokenValidation.Providers
+namespace IdentityAuthentication.TokenValidation.TokenProviders
 {
     internal class ReferenceTokenProvider : ITokenProvider
     {
