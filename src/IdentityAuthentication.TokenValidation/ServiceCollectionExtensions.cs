@@ -91,7 +91,6 @@ namespace IdentityAuthentication.TokenValidation
 
             services.AddSingleton<RefreshTokenService>();
             services.AddSingleton<AuthenticationConfigurationService>();
-            services.AddSingleton<AuthenticationEndpointService>();
 
             services.AddGrpcClient<TokenGrpcProvider.TokenGrpcProviderClient>(options =>
             {
