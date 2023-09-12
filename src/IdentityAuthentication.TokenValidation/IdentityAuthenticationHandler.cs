@@ -17,7 +17,7 @@ namespace IdentityAuthentication.TokenValidation
     internal class IdentityAuthenticationHandler : AuthenticationHandler<IdentityAuthenticationOptions>
     {
         private readonly ITokenProviderFactory _tokenProviderFactory;
-        private readonly ConfigurationService _configurationService;
+        private readonly AuthenticationConfigurationService _configurationService;
         private readonly AuthenticateResult EmptyAuthenticateSuccessResult;
 
         public IdentityAuthenticationHandler(IOptionsMonitor<IdentityAuthenticationOptions> options,
@@ -25,7 +25,7 @@ namespace IdentityAuthentication.TokenValidation
             UrlEncoder encoder,
             ISystemClock clock,
             ITokenProviderFactory tokenProviderFactory,
-            ConfigurationService configurationService) : base(options, logger, encoder, clock)
+            AuthenticationConfigurationService configurationService) : base(options, logger, encoder, clock)
         {
             _tokenProviderFactory = tokenProviderFactory;
             _configurationService = configurationService;

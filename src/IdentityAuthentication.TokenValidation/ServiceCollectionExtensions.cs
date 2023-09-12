@@ -90,7 +90,7 @@ namespace IdentityAuthentication.TokenValidation
             services.AddSingleton<ITokenValidateProvider, GrpcValidateProvider>();
 
             services.AddSingleton<RefreshTokenService>();
-            services.AddSingleton<ConfigurationService>();
+            services.AddSingleton<AuthenticationConfigurationService>();
             services.AddSingleton<AuthenticationEndpointService>();
 
             services.AddGrpcClient<TokenGrpcProvider.TokenGrpcProviderClient>(options =>
@@ -137,7 +137,7 @@ namespace IdentityAuthentication.TokenValidation
         public static IApplicationBuilder UseIdentityAuthentication(this IApplicationBuilder builder)
         {
             var serviceScope = builder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            var configurationService = serviceScope.ServiceProvider.GetRequiredService<ConfigurationService>();
+            var configurationService = serviceScope.ServiceProvider.GetRequiredService<AuthenticationConfigurationService>();
 
             configurationService.InitializationConfiguration();
             return builder;
