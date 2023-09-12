@@ -16,19 +16,6 @@ namespace IdentityAuthentication.TokenValidation.Services
             _validationOptions = tokenValidationOptions.Value;
         }
 
-        public async Task<AuthenticationEndpoints> GetAuthenticationEndpointsAsync()
-        {
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = _validationOptions.AuthorityUrl;
 
-            var response = await httpClient.GetAsync(AuthenticationEndpoints.DefaultConfigurationEndpoint);
-            if (response.IsSuccessStatusCode == false) throw new HttpRequestException("Failed to request authentication endpoints.");
-
-            var result = await response.Content.ReadAsStringAsync();
-            if (result.IsNullOrEmpty()) throw new NullReferenceException("Authentication endpoints the response result is empty.");
-
-            var endpoints = JsonConvert.DeserializeObject<AuthenticationEndpoints>(result);
-            return endpoints ?? throw new NullReferenceException("Authentication endpoints the response result deserialization failed.");
-        }
     }
 }

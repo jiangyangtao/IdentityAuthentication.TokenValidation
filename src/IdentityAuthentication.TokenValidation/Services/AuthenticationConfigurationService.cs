@@ -1,25 +1,29 @@
-﻿using IdentityAuthentication.Model.Configurations;
+﻿using IdentityAuthentication.Model;
+using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.Model.Extensions;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace IdentityAuthentication.TokenValidation.Services
 {
-    internal class ConfigurationService
+    internal class AuthenticationConfigurationService
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly AuthenticationEndpointService _authenticationEndpointService;
+        private readonly TokenValidationOptions _validationOptions;
 
-        public ConfigurationService(IHttpClientFactory httpClientFactory, AuthenticationEndpointService authenticationEndpointService)
+        public AuthenticationConfigurationService(
+            IHttpClientFactory httpClientFactory,
+            IOptions<TokenValidationOptions> tokenValidationOptions)
         {
             _httpClientFactory = httpClientFactory;
-            _authenticationEndpointService = authenticationEndpointService;
+            _validationOptions = tokenValidationOptions.Value;
         }
 
         public void InitializationConfiguration()
         {
             try
             {
-                TokenValidationConfiguration.AuthenticationEndpoints = _authenticationEndpointService.GetAuthenticationEndpointsAsync().Result;
+                TokenValidationConfiguration.AuthenticationEndpoints = GetAuthenticationEndpointsAsync().Result;
 
                 var configuration = GetAuthenticationConfigurationAsync().Result;
                 SetConfiguration(configuration);
@@ -31,10 +35,25 @@ namespace IdentityAuthentication.TokenValidation.Services
         {
             if (TokenValidationConfiguration.HasConfigValue == false)
             {
-                TokenValidationConfiguration.AuthenticationEndpoints = await _authenticationEndpointService.GetAuthenticationEndpointsAsync();
+                TokenValidationConfiguration.AuthenticationEndpoints = await GetAuthenticationEndpointsAsync();
                 var configuration = await GetAuthenticationConfigurationAsync();
                 SetConfiguration(configuration);
             }
+        }
+
+        private async Task<AuthenticationEndpoints> GetAuthenticationEndpointsAsync()
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            httpClient.BaseAddress = _validationOptions.AuthorityUrl;
+
+            var response = await httpClient.GetAsync(AuthenticationEndpoints.DefaultConfigurationEndpoint);
+            if (response.IsSuccessStatusCode == false) throw new HttpRequestException("Failed to request authentication endpoints.");
+
+            var result = await response.Content.ReadAsStringAsync();
+            if (result.IsNullOrEmpty()) throw new NullReferenceException("Authentication endpoints the response result is empty.");
+
+            var endpoints = JsonConvert.DeserializeObject<AuthenticationEndpoints>(result);
+            return endpoints ?? throw new NullReferenceException("Authentication endpoints the response result deserialization failed.");
         }
 
         private static void SetConfiguration(IdentityAuthenticationConfiguration configuration)
