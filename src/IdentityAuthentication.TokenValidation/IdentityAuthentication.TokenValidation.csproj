@@ -27,9 +27,5 @@
 	<ItemGroup>
 		<Protobuf Include="Protos\Token.proto" GrpcServices="Client" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="TokenValidate\" />
-	</ItemGroup>
 	
 </Project>
