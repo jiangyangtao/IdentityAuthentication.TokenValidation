@@ -142,10 +142,10 @@ namespace IdentityAuthentication.TokenValidation
         {
             var serviceProvider = services.BuildServiceProvider();
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            var authenticationConfig = configuration.GetSection("Authentication") ?? throw new KeyNotFoundException("Configuration could not find Authentication");
+            var authenticationConfig = configuration.GetSection("Authentication") ?? throw new KeyNotFoundException("In configuration not found Authentication");
             var endpoint = authenticationConfig.GetValue<string>("Endpoint");
 
-            return endpoint ?? throw new KeyNotFoundException("Configuration could not find Endpoint of Authentication");
+            return endpoint ?? throw new KeyNotFoundException("In configuration not found Endpoint of Authentication");
         }
     }
 }
