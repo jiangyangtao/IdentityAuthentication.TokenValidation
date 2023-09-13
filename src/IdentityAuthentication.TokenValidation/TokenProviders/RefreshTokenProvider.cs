@@ -11,9 +11,9 @@ using System.Net.Mime;
 using System.Security.Claims;
 using System.Text;
 
-namespace IdentityAuthentication.TokenValidation.Services
+namespace IdentityAuthentication.TokenValidation.TokenProviders
 {
-    internal class RefreshTokenService
+    internal class RefreshTokenProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -21,7 +21,7 @@ namespace IdentityAuthentication.TokenValidation.Services
         private readonly TokenGrpcProvider.TokenGrpcProviderClient _tokenGrpcProvider;
 
 
-        public RefreshTokenService(
+        public RefreshTokenProvider(
             IHttpContextAccessor httpContextAccessor,
             IHttpClientFactory httpClientFactory,
             IOptions<TokenValidationOptions> tokenValidationOptions,

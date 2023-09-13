@@ -1,6 +1,6 @@
 ﻿using IdentityAuthentication.Model;
 using IdentityAuthentication.TokenValidation.Abstractions;
-using IdentityAuthentication.TokenValidation.Services;
+using IdentityAuthentication.TokenValidation.TokenProviders;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
@@ -20,7 +20,7 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
             var url = TokenValidationConfiguration.AuthenticationEndpoints.AuthorizeEndpoint;
 
             httpClient.DefaultRequestHeaders.Add(HttpHeaderKeyDefaults.Authorization, token);
-            var response = await httpClient.PostAsync(url, RefreshTokenService.EmptyContent);
+            var response = await httpClient.PostAsync(url, RefreshTokenProvider.EmptyContent);
             if (response.IsSuccessStatusCode == false) return FailTokenResult;
 
             var json = await response.Content.ReadAsStringAsync();
