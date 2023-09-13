@@ -4,19 +4,18 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.TokenProviders
 {
-    internal class ReferenceTokenProvider : ITokenProvider
+    internal class EncryptTokenProvider : ITokenProvider
     {
         private readonly ITokenValidateFactory _tokenValidateFactory;
 
-
-        public ReferenceTokenProvider(ITokenValidateFactory tokenValidateFactory)
+        public EncryptTokenProvider(ITokenValidateFactory tokenValidateFactory)
         {
             _tokenValidateFactory = tokenValidateFactory;
         }
 
-        public TokenType TokenType => TokenType.Reference;
+        public TokenType TokenType => TokenType.JWT;
 
-        public bool IsEncrypt => false;
+        public bool IsEncrypt => true;
 
         public Task<TokenValidationResult> ValidateTokenAsync(string token)
         {

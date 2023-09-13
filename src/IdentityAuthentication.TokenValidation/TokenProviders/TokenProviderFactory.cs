@@ -14,8 +14,11 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
 
         public ITokenProvider CreateTokenProvider()
         {
+            if (TokenValidationConfiguration.AuthenticationConfiguration.EnableJwtEncrypt)
+                return _serviceProvider.GetServices<ITokenProvider>().FirstOrDefault(a => a.IsEncrypt);
+
             var tokenType = TokenValidationConfiguration.AuthenticationConfiguration.TokenType;
-            return _serviceProvider.GetServices<ITokenProvider>().FirstOrDefault(a => a.TokenType == tokenType);
+            return _serviceProvider.GetServices<ITokenProvider>().FirstOrDefault(a => a.TokenType == tokenType && a.IsEncrypt == false);
         }
     }
 }
