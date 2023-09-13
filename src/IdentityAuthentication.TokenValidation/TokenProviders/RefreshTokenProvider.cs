@@ -3,6 +3,7 @@ using IdentityAuthentication.Application.Grpc.Provider;
 using IdentityAuthentication.Model;
 using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.Model.Extensions;
+using IdentityAuthentication.TokenValidation.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -13,7 +14,7 @@ using System.Text;
 
 namespace IdentityAuthentication.TokenValidation.TokenProviders
 {
-    internal class RefreshTokenProvider
+    internal class RefreshTokenProvider : IRefreshTokenProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;

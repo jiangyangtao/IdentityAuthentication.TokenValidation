@@ -90,12 +90,12 @@ namespace IdentityAuthentication.TokenValidation
             services.AddScoped<ITokenValidateProvider, HttpValidateProvider>();
             services.AddScoped<ITokenValidateProvider, GrpcValidateProvider>();
 
+            services.AddScoped<IRefreshTokenProvider, RefreshTokenProvider>();
             services.AddScoped<ITokenRefreshFactory, TokenRefreshFactory>();
             services.AddScoped<ITokenRefreshProvider, HttpRefreshProvider>();
             services.AddScoped<ITokenRefreshProvider, GrpcRefreshProvider>();
-
-            services.AddScoped<RefreshTokenProvider>();
-            services.AddScoped<AuthenticationConfigurationService>();
+           
+            services.AddSingleton<AuthenticationConfigurationService>();
 
             services.AddGrpcClient<TokenGrpcProvider.TokenGrpcProviderClient>(options =>
             {
