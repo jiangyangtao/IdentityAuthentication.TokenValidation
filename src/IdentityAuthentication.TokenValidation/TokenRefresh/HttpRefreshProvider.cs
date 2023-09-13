@@ -9,5 +9,10 @@ namespace IdentityAuthentication.TokenValidation.TokenRefresh
 {
     internal class HttpRefreshProvider : ITokenRefreshProvider
     {
+        public HttpRefreshProvider()
+        {
+        }
+
+        public ConnectionType ConnectionType => ConnectionType.Http;
     }
 }

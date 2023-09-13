@@ -1,9 +1,5 @@
 ﻿using IdentityAuthentication.TokenValidation.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityAuthentication.TokenValidation.TokenRefresh
 {
@@ -18,7 +14,10 @@ namespace IdentityAuthentication.TokenValidation.TokenRefresh
 
         public ITokenRefreshProvider CreateTokenRefreshProvider()
         {
+            var connectionType = ConnectionType.Http;
+            if (TokenValidationConfiguration.AuthenticationConfiguration.EnableGrpcConnection) connectionType = ConnectionType.Grpc;
 
+            return _serviceProvider.GetServices<ITokenRefreshProvider>().FirstOrDefault(a => a.ConnectionType == connectionType);
         }
     }
 }

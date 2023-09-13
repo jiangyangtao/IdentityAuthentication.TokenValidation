@@ -7,7 +7,12 @@ using System.Threading.Tasks;
 
 namespace IdentityAuthentication.TokenValidation.TokenRefresh
 {
-    internal class GrpcRefreshProvider: ITokenRefreshProvider
+    internal class GrpcRefreshProvider : ITokenRefreshProvider
     {
+        public GrpcRefreshProvider()
+        {
+        }
+
+        public ConnectionType ConnectionType => ConnectionType.Grpc;
     }
 }

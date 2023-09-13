@@ -1,6 +1,5 @@
 ﻿using IdentityAuthentication.Model;
 using IdentityAuthentication.Model.Configurations;
-using Microsoft.Extensions.Configuration;
 
 namespace IdentityAuthentication.TokenValidation
 {
@@ -26,5 +25,12 @@ namespace IdentityAuthentication.TokenValidation
                         SecretKeyConfiguration != null;
             }
         }
+    }
+
+    internal enum ConnectionType
+    {
+        Http,
+
+        Grpc,
     }
 }
