@@ -89,7 +89,7 @@ namespace IdentityAuthentication.TokenValidation
             services.AddSingleton<ITokenValidateProvider, HttpValidateProvider>();
             services.AddSingleton<ITokenValidateProvider, GrpcValidateProvider>();
 
-            services.AddSingleton<RefreshTokenService>();
+            services.AddSingleton<RefreshTokenProvider>();
             services.AddSingleton<AuthenticationConfigurationService>();
 
             services.AddGrpcClient<TokenGrpcProvider.TokenGrpcProviderClient>(options =>

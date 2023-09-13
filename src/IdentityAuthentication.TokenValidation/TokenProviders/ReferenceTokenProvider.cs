@@ -3,7 +3,6 @@ using IdentityAuthentication.Model;
 using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.Model.Extensions;
 using IdentityAuthentication.TokenValidation.Abstractions;
-using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.TokenProviders
@@ -13,12 +12,12 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly TokenGrpcProvider.TokenGrpcProviderClient _tokenGrpcProvider;
         private readonly TokenValidationResult _failTokenResult;
-        private readonly RefreshTokenService _refreshTokenService;
+        private readonly RefreshTokenProvider _refreshTokenService;
 
         public ReferenceTokenProvider(
             IHttpClientFactory httpClientFactory,
             TokenGrpcProvider.TokenGrpcProviderClient okenGrpcProvider,
-            RefreshTokenService refreshTokenService)
+            RefreshTokenProvider refreshTokenService)
         {
             _httpClientFactory = httpClientFactory;
             _tokenGrpcProvider = okenGrpcProvider;
@@ -60,7 +59,7 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
             var url = TokenValidationConfiguration.AuthenticationEndpoints.AuthorizeEndpoint;
 
             httpClient.DefaultRequestHeaders.Add(HttpHeaderKeyDefaults.Authorization, token);
-            var response = await httpClient.PostAsync(url, RefreshTokenService.EmptyContent);
+            var response = await httpClient.PostAsync(url, RefreshTokenProvider.EmptyContent);
             if (response.IsSuccessStatusCode == false) return _failTokenResult;
 
             var json = await response.Content.ReadAsStringAsync();

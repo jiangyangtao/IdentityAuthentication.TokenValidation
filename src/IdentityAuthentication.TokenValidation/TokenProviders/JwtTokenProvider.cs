@@ -1,7 +1,6 @@
 ﻿using IdentityAuthentication.Model;
 using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.TokenValidation.Abstractions;
-using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -13,9 +12,9 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
         private readonly Model.TokenValidation _tokenValidation;
         private readonly TokenValidationParameters _tokenValidationParameters;
-        private readonly RefreshTokenService _refreshTokenService;
+        private readonly RefreshTokenProvider _refreshTokenService;
 
-        public JwtTokenProvider(RefreshTokenService refreshTokenService)
+        public JwtTokenProvider(RefreshTokenProvider refreshTokenService)
         {
             _rsaAlgorithm = new RsaAlgorithm(TokenValidationConfiguration.SecretKeyConfiguration);
             _tokenValidation = new Model.TokenValidation(
