@@ -38,31 +38,6 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
 
         public Metadata BuildGrpcHeader(string token = "") => new() { { HttpHeaderKeyDefaults.Authorization, token.IsNullOrEmpty() ? AccessToken : token } };
 
-        public async Task<TokenValidationResult> BuildTokenSuccessResultAsync(string json)
-        {
-            var obj = JObject.Parse(json);
-            var claims = new List<Claim>();
-
-            string grantType = string.Empty, expiration = string.Empty;
-            foreach (var item in obj)
-            {
-                var value = item.Value.ToString();
-                if (item.Key.Equals(nameof(grantType), StringComparison.OrdinalIgnoreCase)) grantType = value;
-                if (item.Key.Equals(ClaimKeyDefaults.Expiration, StringComparison.OrdinalIgnoreCase)) expiration = value;
-
-                claims.Add(new Claim(item.Key, value));
-            }
-            await RefreshTokenAsync(expiration);
-
-            var identity = new ClaimsIdentity(claims, grantType);
-            var result = new TokenValidationResult
-            {
-                IsValid = true,
-                ClaimsIdentity = identity,
-            };
-            return result;
-        }
-
         public async Task RefreshTokenAsync(IEnumerable<Claim> claims)
         {
             var expiration = claims.FirstOrDefault(a => a.Type == ClaimKeyDefaults.Expiration);

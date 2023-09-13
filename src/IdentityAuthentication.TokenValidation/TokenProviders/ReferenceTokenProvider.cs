@@ -10,6 +10,7 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
     internal class ReferenceTokenProvider : ITokenProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ITokenResultProvider _tokenResultProvider;
         private readonly TokenGrpcProvider.TokenGrpcProviderClient _tokenGrpcProvider;
         private readonly TokenValidationResult _failTokenResult;
         private readonly RefreshTokenProvider _refreshTokenService;
@@ -17,12 +18,14 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
         public ReferenceTokenProvider(
             IHttpClientFactory httpClientFactory,
             TokenGrpcProvider.TokenGrpcProviderClient okenGrpcProvider,
-            RefreshTokenProvider refreshTokenService)
+            RefreshTokenProvider refreshTokenService,
+            ITokenResultProvider tokenResultProvider)
         {
             _httpClientFactory = httpClientFactory;
             _tokenGrpcProvider = okenGrpcProvider;
             _refreshTokenService = refreshTokenService;
             _failTokenResult = new TokenValidationResult { IsValid = false, };
+            _tokenResultProvider = tokenResultProvider;
         }
 
         public TokenType TokenType => TokenType.Reference;
@@ -45,7 +48,7 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
                 {
                     IsValid = r.Result
                 };
-                return await _refreshTokenService.BuildTokenSuccessResultAsync(r.Claims);
+                return await _tokenResultProvider.BuildTokenSuccessResultAsync(r.Claims);
             }
             catch
             {
@@ -65,7 +68,7 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
             var json = await response.Content.ReadAsStringAsync();
             if (json.IsNullOrEmpty()) return _failTokenResult;
 
-            var result = await _refreshTokenService.BuildTokenSuccessResultAsync(json);
+            var result = await _tokenResultProvider.BuildTokenSuccessResultAsync(json);
             return result;
         }
     }
