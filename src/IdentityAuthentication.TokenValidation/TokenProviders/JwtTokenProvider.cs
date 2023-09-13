@@ -1,6 +1,7 @@
 ﻿using IdentityAuthentication.Model;
 using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.TokenValidation.Abstractions;
+using IdentityAuthentication.TokenValidation.TokenRefresh;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 

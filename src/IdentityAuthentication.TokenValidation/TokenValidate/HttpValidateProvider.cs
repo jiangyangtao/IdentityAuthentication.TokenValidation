@@ -1,6 +1,6 @@
 ﻿using IdentityAuthentication.Model;
 using IdentityAuthentication.TokenValidation.Abstractions;
-using IdentityAuthentication.TokenValidation.TokenProviders;
+using IdentityAuthentication.TokenValidation.TokenRefresh;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate

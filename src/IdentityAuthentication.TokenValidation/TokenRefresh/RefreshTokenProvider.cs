@@ -12,7 +12,7 @@ using System.Net.Mime;
 using System.Security.Claims;
 using System.Text;
 
-namespace IdentityAuthentication.TokenValidation.TokenProviders
+namespace IdentityAuthentication.TokenValidation.TokenRefresh
 {
     internal class RefreshTokenProvider : IRefreshTokenProvider
     {
@@ -20,18 +20,21 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly TokenValidationOptions _validationOptions;
         private readonly TokenGrpcProvider.TokenGrpcProviderClient _tokenGrpcProvider;
+        private readonly ITokenRefreshFactory _tokenRefreshFactory;
 
 
         public RefreshTokenProvider(
             IHttpContextAccessor httpContextAccessor,
             IHttpClientFactory httpClientFactory,
             IOptions<TokenValidationOptions> tokenValidationOptions,
-            TokenGrpcProvider.TokenGrpcProviderClient tokenGrpcProvider)
+            TokenGrpcProvider.TokenGrpcProviderClient tokenGrpcProvider,
+            ITokenRefreshFactory tokenRefreshFactory)
         {
             _httpContextAccessor = httpContextAccessor;
             _httpClientFactory = httpClientFactory;
             _validationOptions = tokenValidationOptions.Value;
             _tokenGrpcProvider = tokenGrpcProvider;
+            _tokenRefreshFactory = tokenRefreshFactory;
         }
 
         public static StringContent EmptyContent => new(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
@@ -55,13 +58,8 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
             var refreshTime = DateTime.Now.AddSeconds(TokenValidationConfiguration.AccessTokenConfiguration.RefreshTime);
             if (refreshTime < expirationTime) return;
 
-            if (TokenValidationConfiguration.AuthenticationConfiguration.EnableGrpcConnection)
-            {
-                await GrpcRefreshTokenAsync();
-                return;
-            }
-
-            await HttpRefreshTokenAsync();
+            var accessToken = await _tokenRefreshFactory.CreateTokenRefreshProvider().RefreshTokenAsync(AccessToken, RefreshToken);
+            if (accessToken.NotNullAndEmpty()) _httpContextAccessor.HttpContext?.Response.Headers.SetAccessToken(accessToken);
         }
 
         private async Task HttpRefreshTokenAsync()
