@@ -63,7 +63,7 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
             var url = TokenValidationConfiguration.AuthenticationEndpoints.AuthorizeEndpoint;
 
             httpClient.DefaultRequestHeaders.Add(HttpHeaderKeyDefaults.Authorization, token);
-            var response = await httpClient.PostAsync(url, RefreshTokenProvider.EmptyContent);
+            var response = await httpClient.PostAsync(url, TokenBuilder.EmptyContent);
             if (response.IsSuccessStatusCode == false) return _failTokenResult;
 
             var json = await response.Content.ReadAsStringAsync();
