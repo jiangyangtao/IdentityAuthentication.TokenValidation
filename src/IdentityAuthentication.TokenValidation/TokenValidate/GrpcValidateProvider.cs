@@ -25,6 +25,8 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
             _tokenGrpcProvider = tokenGrpcProvider;
         }
 
+        public ConnectionType ConnectionType =>  ConnectionType.Grpc;
+
         private string AccessToken => _httpContextAccessor.HttpContext?.Request.Headers.GetAuthorization();
 
         public async Task<TokenValidationResult> TokenValidateAsync(string token)

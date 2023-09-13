@@ -17,6 +17,8 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
             _tokenResultProvider = tokenResultProvider;
         }
 
+        public ConnectionType ConnectionType => ConnectionType.Http;
+
         public async Task<TokenValidationResult> TokenValidateAsync(string token)
         {
             var httpClient = _httpClientFactory.CreateClient();

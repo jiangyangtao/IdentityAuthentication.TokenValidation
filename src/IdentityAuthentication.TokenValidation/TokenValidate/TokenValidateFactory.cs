@@ -1,21 +1,23 @@
 ﻿using IdentityAuthentication.TokenValidation.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
 {
     internal class TokenValidateFactory : ITokenValidateFactory
     {
-        public TokenValidateFactory()
+        private readonly IServiceProvider _serviceProvider;
+
+        public TokenValidateFactory(IServiceProvider serviceProvider)
         {
+            _serviceProvider = serviceProvider;
         }
 
         public ITokenValidateProvider CreateTokenValidateProvider()
         {
-            throw new NotImplementedException();
+            var connectionType = ConnectionType.Http;
+            if (TokenValidationConfiguration.AuthenticationConfiguration.EnableGrpcConnection) connectionType = ConnectionType.Grpc;
+
+            return _serviceProvider.GetServices<ITokenValidateProvider>().FirstOrDefault(a => a.ConnectionType == connectionType);
         }
     }
 }
