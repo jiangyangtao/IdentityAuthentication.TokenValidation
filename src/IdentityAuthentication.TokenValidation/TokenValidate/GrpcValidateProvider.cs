@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
 {
-    internal class GrpcValidateProvider : ITokenValidateProvider
+    internal class GrpcValidateProvider : BaseTokenValidate, ITokenValidateProvider
     {
         public GrpcValidateProvider()
         {
