@@ -65,7 +65,7 @@ namespace IdentityAuthentication.TokenValidation.TokenRefresh
             httpClient.DefaultRequestHeaders.SetAuthorization(AccessToken);
             if (RefreshToken.NotNullAndEmpty()) httpClient.DefaultRequestHeaders.SetRefreshToken(RefreshToken);
 
-            var response = await httpClient.PostAsync(TokenValidationConfiguration.AuthenticationEndpoints.RefreshToeknEndpoint, EmptyContent);
+            var response = await httpClient.PostAsync(TokenValidationConfiguration.AuthenticationEndpoints.RefreshToeknEndpoint, TokenBuilder.EmptyContent);
             if (response.IsSuccessStatusCode == false) return;
 
             var json = await response.Content.ReadAsStringAsync();

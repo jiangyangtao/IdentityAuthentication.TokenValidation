@@ -94,7 +94,8 @@ namespace IdentityAuthentication.TokenValidation
             services.AddScoped<ITokenRefreshFactory, TokenRefreshFactory>();
             services.AddScoped<ITokenRefreshProvider, HttpRefreshProvider>();
             services.AddScoped<ITokenRefreshProvider, GrpcRefreshProvider>();
-           
+
+            services.AddScoped<IGrpcProvider, GrpcProvider>();
             services.AddSingleton<AuthenticationConfigurationService>();
 
             services.AddGrpcClient<TokenGrpcProvider.TokenGrpcProviderClient>(options =>
