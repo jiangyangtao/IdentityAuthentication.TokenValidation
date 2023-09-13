@@ -82,20 +82,20 @@ namespace IdentityAuthentication.TokenValidation
                 options.Authority = authenticationOptions.Authority;
             });
 
-            services.AddSingleton<ITokenProvider, JwtTokenProvider>();
-            services.AddSingleton<ITokenProvider, ReferenceTokenProvider>();
-            services.AddSingleton<ITokenProviderFactory, TokenProviderFactory>();
+            services.AddScoped<ITokenProvider, JwtTokenProvider>();
+            services.AddScoped<ITokenProvider, ReferenceTokenProvider>();
+            services.AddScoped<ITokenProviderFactory, TokenProviderFactory>();
 
-            services.AddSingleton<ITokenValidateFactory, TokenValidateFactory>();
-            services.AddSingleton<ITokenValidateProvider, HttpValidateProvider>();
-            services.AddSingleton<ITokenValidateProvider, GrpcValidateProvider>();
+            services.AddScoped<ITokenValidateFactory, TokenValidateFactory>();
+            services.AddScoped<ITokenValidateProvider, HttpValidateProvider>();
+            services.AddScoped<ITokenValidateProvider, GrpcValidateProvider>();
 
-            services.AddSingleton<ITokenRefreshFactory, TokenRefreshFactory>();
-            services.AddSingleton<ITokenRefreshProvider, HttpRefreshProvider>();
-            services.AddSingleton<ITokenRefreshProvider, GrpcRefreshProvider>();
+            services.AddScoped<ITokenRefreshFactory, TokenRefreshFactory>();
+            services.AddScoped<ITokenRefreshProvider, HttpRefreshProvider>();
+            services.AddScoped<ITokenRefreshProvider, GrpcRefreshProvider>();
 
-            services.AddSingleton<RefreshTokenProvider>();
-            services.AddSingleton<AuthenticationConfigurationService>();
+            services.AddScoped<RefreshTokenProvider>();
+            services.AddScoped<AuthenticationConfigurationService>();
 
             services.AddGrpcClient<TokenGrpcProvider.TokenGrpcProviderClient>(options =>
             {
