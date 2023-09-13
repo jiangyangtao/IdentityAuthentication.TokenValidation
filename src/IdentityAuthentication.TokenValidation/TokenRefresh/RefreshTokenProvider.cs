@@ -8,9 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
-using System.Net.Mime;
 using System.Security.Claims;
-using System.Text;
 
 namespace IdentityAuthentication.TokenValidation.TokenRefresh
 {
@@ -36,8 +34,6 @@ namespace IdentityAuthentication.TokenValidation.TokenRefresh
             _tokenGrpcProvider = tokenGrpcProvider;
             _tokenRefreshFactory = tokenRefreshFactory;
         }
-
-        public static StringContent EmptyContent => new(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
 
         public Metadata BuildGrpcHeader(string token = "") => new() { { HttpHeaderKeyDefaults.Authorization, token.IsNullOrEmpty() ? AccessToken : token } };
 
