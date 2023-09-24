@@ -30,7 +30,7 @@ namespace IdentityAuthentication.TokenValidation
             _tokenProviderFactory = tokenProviderFactory;
             _configurationService = configurationService;
 
-            var ticket = new AuthenticationTicket(new ClaimsPrincipal(), IdentityAuthenticationDefaults.AuthenticationScheme);
+            var ticket = new AuthenticationTicket(new ClaimsPrincipal(), IdentityAuthenticationDefaultKeys.AuthenticationScheme);
             EmptyAuthenticateSuccessResult = AuthenticateResult.Success(ticket);
         }
 

@@ -1,5 +1,6 @@
 ﻿using IdentityAuthentication.Application.Grpc.Provider;
 using IdentityAuthentication.TokenValidation.Abstractions;
+using IdentityAuthentication.TokenValidation.Enums;
 
 namespace IdentityAuthentication.TokenValidation.TokenRefresh
 {

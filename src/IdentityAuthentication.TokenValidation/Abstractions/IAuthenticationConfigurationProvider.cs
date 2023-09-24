@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IdentityAuthentication.Model.Configurations;
+using IdentityAuthentication.Model.Models;
 
 namespace IdentityAuthentication.TokenValidation.Abstractions
 {
     internal interface IAuthenticationConfigurationProvider
     {
+        AuthenticationConfigurationBase AuthenticationConfiguration { get; }
+
+        AccessTokenConfiguration? AccessTokenConfiguration { get; }
+
+        TokenConfigurationBase? RefreshTokenConfiguration { get; }
+
+        RsaVerifySignatureConfiguration? RsaVerifySignatureConfiguration { get; }
+
+        bool CanClientValidation { get; }
+
+        Task InitializeAsync();
     }
 }
