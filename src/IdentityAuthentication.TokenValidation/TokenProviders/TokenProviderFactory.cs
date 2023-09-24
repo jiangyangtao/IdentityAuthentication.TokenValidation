@@ -17,10 +17,10 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
         public ITokenProvider CreateTokenProvider()
         {
             if (_configurationProvider.CanClientValidation)
-                return _serviceProvider.GetServices<ITokenProvider>().FirstOrDefault(a => a.IsEncrypt);
+                return _serviceProvider.GetServices<ITokenProvider>().FirstOrDefault(a => a.TokenType == _configurationProvider.AuthenticationConfiguration.TokenType);
 
-            var tokenType = TokenValidationConfiguration.AuthenticationConfiguration.TokenType;
-            return _serviceProvider.GetServices<ITokenProvider>().FirstOrDefault(a => a.TokenType == tokenType && a.IsEncrypt == false);
+            var tokenType = _configurationProvider.AuthenticationConfiguration.TokenType;
+            return _serviceProvider.GetServices<ITokenProvider>().FirstOrDefault(a => a.TokenType == tokenType);
         }
     }
 }

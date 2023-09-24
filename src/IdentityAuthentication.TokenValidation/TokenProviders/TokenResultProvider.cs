@@ -25,7 +25,7 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
             {
                 var value = item.Value.ToString();
                 if (item.Key.Equals(nameof(grantType), StringComparison.OrdinalIgnoreCase)) grantType = value;
-                if (item.Key.Equals(ClaimKeyDefaults.Expiration, StringComparison.OrdinalIgnoreCase)) expiration = value;
+                if (item.Key.Equals(ClaimTypes.Expiration, StringComparison.OrdinalIgnoreCase)) expiration = value;
 
                 claims.Add(new Claim(item.Key, value));
             }

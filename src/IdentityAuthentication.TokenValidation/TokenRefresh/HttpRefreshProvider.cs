@@ -1,29 +1,22 @@
 ﻿using IdentityAuthentication.Model.Extensions;
-using IdentityAuthentication.Model;
+using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using IdentityAuthentication.TokenValidation.Enums;
+using Newtonsoft.Json.Linq;
 
 namespace IdentityAuthentication.TokenValidation.TokenRefresh
 {
     internal class HttpRefreshProvider : ITokenRefreshProvider
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IAuthenticationConfigurationProvider _configurationProvider;
 
         public HttpRefreshProvider(
-            IHttpContextAccessor httpContextAccessor,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            IAuthenticationConfigurationProvider configurationProvider)
         {
-            _httpContextAccessor = httpContextAccessor;
             _httpClientFactory = httpClientFactory;
+            _configurationProvider = configurationProvider;
         }
 
         public ConnectionType ConnectionType => ConnectionType.Http;
@@ -35,16 +28,16 @@ namespace IdentityAuthentication.TokenValidation.TokenRefresh
             httpClient.DefaultRequestHeaders.SetAuthorization(accessToken);
             if (refreshToken.NotNullAndEmpty()) httpClient.DefaultRequestHeaders.SetRefreshToken(refreshToken);
 
-            var response = await httpClient.PostAsync(TokenValidationConfiguration.AuthenticationEndpoints.RefreshToeknEndpoint, TokenBuilder.EmptyContent);
+            var response = await httpClient.PostAsync(_configurationProvider.AuthenticationEndpoints.RefreshToeknEndpoint, TokenBuilder.EmptyContent);
             if (response.IsSuccessStatusCode == false) return string.Empty;
 
             var json = await response.Content.ReadAsStringAsync();
             if (json.IsNullOrEmpty()) return string.Empty;
 
             var result = JObject.Parse(json);
-            if (result.ContainsKey(HttpHeaderKeyDefaults.AccessToken) == false) return string.Empty;
+            if (result.ContainsKey(IdentityAuthenticationDefaultKeys.AccessToken) == false) return string.Empty;
 
-            return result[HttpHeaderKeyDefaults.AccessToken].ToString();
+            return result[IdentityAuthenticationDefaultKeys.AccessToken].ToString();
         }
     }
 }

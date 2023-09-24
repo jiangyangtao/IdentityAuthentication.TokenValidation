@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using IdentityAuthentication.Model;
 using IdentityAuthentication.Model.Extensions;
+using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;
 using Microsoft.AspNetCore.Http;
 
@@ -17,6 +18,6 @@ namespace IdentityAuthentication.TokenValidation.TokenRefresh
 
         private string AccessToken => _httpContextAccessor.HttpContext?.Request.Headers.GetAuthorization();
 
-        public Metadata BuildGrpcHeader(string token = "") => new() { { HttpHeaderKeyDefaults.Authorization, token.IsNullOrEmpty() ? AccessToken : token } };
+        public Metadata BuildGrpcHeader(string token = "") => new() { { IdentityAuthenticationDefaultKeys.Authorization, token.IsNullOrEmpty() ? AccessToken : token } };
     }
 }
