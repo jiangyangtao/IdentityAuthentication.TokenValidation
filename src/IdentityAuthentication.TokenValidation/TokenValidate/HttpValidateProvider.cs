@@ -1,5 +1,6 @@
-﻿using IdentityAuthentication.Model;
+﻿using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;
+using IdentityAuthentication.TokenValidation.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
@@ -8,13 +9,16 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITokenResultProvider _tokenResultProvider;
+        private readonly IAuthenticationConfigurationProvider _configurationProvider;
 
         public HttpValidateProvider(
             IHttpClientFactory httpClientFactory,
-            ITokenResultProvider tokenResultProvider)
+            ITokenResultProvider tokenResultProvider,
+            IAuthenticationConfigurationProvider configurationProvider)
         {
             _httpClientFactory = httpClientFactory;
             _tokenResultProvider = tokenResultProvider;
+            _configurationProvider = configurationProvider;
         }
 
         public ConnectionType ConnectionType => ConnectionType.Http;
@@ -22,9 +26,9 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
         public async Task<TokenValidationResult> TokenValidateAsync(string token)
         {
             var httpClient = _httpClientFactory.CreateClient();
-            var url = TokenValidationConfiguration.AuthenticationEndpoints.AuthorizeEndpoint;
+            var url = _configurationProvider.AuthenticationEndpoints.AuthorizeEndpoint;
 
-            httpClient.DefaultRequestHeaders.Add(HttpHeaderKeyDefaults.Authorization, token);
+            httpClient.DefaultRequestHeaders.Add(IdentityAuthenticationDefaultKeys.Authorization, token);
             var response = await httpClient.PostAsync(url, TokenBuilder.EmptyContent);
             if (response.IsSuccessStatusCode == false) return TokenBuilder.FailTokenResult;
 

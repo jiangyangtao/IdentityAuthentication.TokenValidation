@@ -1,4 +1,5 @@
-﻿using IdentityAuthentication.Model.Configurations;
+﻿using IdentityAuthentication.Model;
+using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.Model.Models;
 
 namespace IdentityAuthentication.TokenValidation.Abstractions
@@ -12,6 +13,8 @@ namespace IdentityAuthentication.TokenValidation.Abstractions
         TokenConfigurationBase? RefreshTokenConfiguration { get; }
 
         RsaVerifySignatureConfiguration? RsaVerifySignatureConfiguration { get; }
+
+        IdentityAuthenticationEndpoints AuthenticationEndpoints { get; }
 
         bool CanClientValidation { get; }
 

@@ -43,7 +43,7 @@ namespace IdentityAuthentication.TokenValidation
 
         private IdentityAuthenticationConfiguration IdentityAuthenticationConfiguration { set; get; }
 
-        private IdentityAuthenticationEndpoints AuthenticationEndpoints { set; get; }
+        public IdentityAuthenticationEndpoints AuthenticationEndpoints { set; get; }
 
 
         public void Initialize() => InitializeAuthenticationConfigurationAsync().Wait();

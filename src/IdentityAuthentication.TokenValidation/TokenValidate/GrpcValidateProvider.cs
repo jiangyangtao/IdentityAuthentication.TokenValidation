@@ -1,6 +1,7 @@
 ﻿using IdentityAuthentication.Application.Grpc.Provider;
 using IdentityAuthentication.Model.Extensions;
 using IdentityAuthentication.TokenValidation.Abstractions;
+using IdentityAuthentication.TokenValidation.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 

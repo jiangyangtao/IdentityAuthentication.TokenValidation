@@ -1,9 +1,7 @@
 ﻿using IdentityAuthentication.Model;
-using IdentityAuthentication.Model.Configurations;
 using IdentityAuthentication.Model.Enums;
 using IdentityAuthentication.TokenValidation.Abstractions;
 using IdentityAuthentication.TokenValidation.TokenRefresh;
-using IdentityAuthentication.TokenValidation.TokenValidate;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -15,17 +13,17 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
         private readonly Model.TokenValidation _tokenValidation;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly RefreshTokenProvider _refreshTokenService;
+        private readonly Credentials PublicCredentials;
 
-        public JwtTokenProvider(RefreshTokenProvider refreshTokenService)
+        public JwtTokenProvider(RefreshTokenProvider refreshTokenService, IAuthenticationConfigurationProvider configurationProvider)
         {
-            _tokenValidation = new Model.TokenValidation(
-                        TokenValidationConfiguration.AccessTokenConfiguration,
-                        TokenValidationConfiguration.RefreshTokenConfiguration,
-                        TokenValidationConfiguration.SecretKeyConfiguration,
-                        TokenValidationConfiguration.AuthenticationConfiguration);
+            var publicSignature = configurationProvider.RsaVerifySignatureConfiguration.ToRsaSignature();
+            PublicCredentials = new Credentials(publicSignature);
+
+            _tokenValidation = new Model.TokenValidation(configurationProvider.AccessTokenConfiguration, PublicCredentials);
 
             _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            _tokenValidationParameters = _tokenValidation.GenerateAccessTokenValidation();
+            _tokenValidationParameters = _tokenValidation.GenerateTokenValidation();
             _refreshTokenService = refreshTokenService;
         }
 
