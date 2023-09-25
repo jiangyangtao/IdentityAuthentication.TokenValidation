@@ -15,6 +15,8 @@ namespace IdentityAuthentication.TokenValidation.Abstractions
 
         bool CanClientValidation { get; }
 
+        void Initialize();
+
         Task InitializeAsync();
     }
 }

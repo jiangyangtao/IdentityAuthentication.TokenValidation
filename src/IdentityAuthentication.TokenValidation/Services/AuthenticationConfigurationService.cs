@@ -11,6 +11,7 @@ namespace IdentityAuthentication.TokenValidation.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly TokenValidationOptions _validationOptions;
 
+
         public AuthenticationConfigurationService(
             IHttpClientFactory httpClientFactory,
             IOptions<TokenValidationOptions> tokenValidationOptions)
