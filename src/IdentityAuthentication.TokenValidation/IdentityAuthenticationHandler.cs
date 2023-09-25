@@ -2,7 +2,6 @@
 using IdentityAuthentication.Model.Handlers;
 using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;
-using IdentityAuthentication.TokenValidation.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +16,7 @@ namespace IdentityAuthentication.TokenValidation
     internal class IdentityAuthenticationHandler : AuthenticationHandler<IdentityAuthenticationOptions>
     {
         private readonly ITokenProviderFactory _tokenProviderFactory;
-        private readonly AuthenticationConfigurationService _configurationService;
+        private readonly IAuthenticationConfigurationProvider _configurationProvider;
         private readonly AuthenticateResult EmptyAuthenticateSuccessResult;
 
         public IdentityAuthenticationHandler(IOptionsMonitor<IdentityAuthenticationOptions> options,
@@ -25,10 +24,10 @@ namespace IdentityAuthentication.TokenValidation
             UrlEncoder encoder,
             ISystemClock clock,
             ITokenProviderFactory tokenProviderFactory,
-            AuthenticationConfigurationService configurationService) : base(options, logger, encoder, clock)
+            IAuthenticationConfigurationProvider configurationProvider) : base(options, logger, encoder, clock)
         {
             _tokenProviderFactory = tokenProviderFactory;
-            _configurationService = configurationService;
+            _configurationProvider = configurationProvider;
 
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(), IdentityAuthenticationDefaultKeys.AuthenticationScheme);
             EmptyAuthenticateSuccessResult = AuthenticateResult.Success(ticket);
@@ -61,7 +60,7 @@ namespace IdentityAuthentication.TokenValidation
             var allowAnonymous = endpoint.Metadata.GetMetadata<IAllowAnonymous>();
             if (allowAnonymous != null) return EmptyAuthenticateSuccessResult;
 
-            await _configurationService.InitializationConfigurationaAsync();
+            await _configurationProvider.InitializeAsync();
 
             var token = messageReceivedContext.Token;
             if (token.IsNullOrEmpty())

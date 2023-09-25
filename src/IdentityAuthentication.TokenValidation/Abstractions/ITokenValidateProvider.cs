@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using IdentityAuthentication.TokenValidation.Enums;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.Abstractions
 {
