@@ -29,8 +29,6 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
 
         public TokenType TokenType => TokenType.JWT;
 
-        public bool IsEncrypt => false;
-
         public async Task<TokenValidationResult> ValidateTokenAsync(string token)
         {
             var tokenValidationResult = await _jwtSecurityTokenHandler.ValidateTokenAsync(token, _tokenValidationParameters);

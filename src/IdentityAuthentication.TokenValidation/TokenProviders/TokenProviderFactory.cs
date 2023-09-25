@@ -6,15 +6,17 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
     internal class TokenProviderFactory : ITokenProviderFactory
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IAuthenticationConfigurationProvider _configurationProvider;
 
-        public TokenProviderFactory(IServiceProvider serviceProvider)
+        public TokenProviderFactory(IServiceProvider serviceProvider, IAuthenticationConfigurationProvider configurationProvider)
         {
             _serviceProvider = serviceProvider;
+            _configurationProvider = configurationProvider;
         }
 
         public ITokenProvider CreateTokenProvider()
         {
-            if (TokenValidationConfiguration.AuthenticationConfiguration.EnableJwtEncrypt)
+            if (_configurationProvider.CanClientValidation)
                 return _serviceProvider.GetServices<ITokenProvider>().FirstOrDefault(a => a.IsEncrypt);
 
             var tokenType = TokenValidationConfiguration.AuthenticationConfiguration.TokenType;

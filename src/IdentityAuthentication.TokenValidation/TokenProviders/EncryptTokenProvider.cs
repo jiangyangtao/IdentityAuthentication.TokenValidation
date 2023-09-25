@@ -13,9 +13,7 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
             _tokenValidateFactory = tokenValidateFactory;
         }
 
-        public TokenType TokenType => TokenType.JWT;
-
-        public bool IsEncrypt => true;
+        public TokenType TokenType => TokenType.Encrypt;
 
         public Task<TokenValidationResult> ValidateTokenAsync(string token)
         {

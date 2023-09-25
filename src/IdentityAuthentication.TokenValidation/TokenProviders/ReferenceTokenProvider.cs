@@ -17,8 +17,6 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
 
         public TokenType TokenType => TokenType.Reference;
 
-        public bool IsEncrypt => false;
-
         public Task<TokenValidationResult> ValidateTokenAsync(string token)
         {
             return _tokenValidateFactory.CreateTokenValidateProvider().TokenValidateAsync(token);

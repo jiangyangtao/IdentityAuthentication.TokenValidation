@@ -142,9 +142,9 @@ namespace IdentityAuthentication.TokenValidation
         public static IApplicationBuilder UseIdentityAuthentication(this IApplicationBuilder builder)
         {
             var serviceScope = builder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            var configurationService = serviceScope.ServiceProvider.GetRequiredService<AuthenticationConfigurationService>();
+            var configurationProvider = serviceScope.ServiceProvider.GetRequiredService<IAuthenticationConfigurationProvider>();
 
-            configurationService.InitializationConfiguration();
+            configurationProvider.Initialize();
             return builder;
         }
 

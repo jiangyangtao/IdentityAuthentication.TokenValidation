@@ -7,8 +7,6 @@ namespace IdentityAuthentication.TokenValidation.Abstractions
     {
         TokenType TokenType { get; }
 
-        bool IsEncrypt { get; }
-
         Task<TokenValidationResult> ValidateTokenAsync(string token);
     }
 }
