@@ -1,5 +1,6 @@
 ﻿using IdentityAuthentication.Model;
 using IdentityAuthentication.Model.Configurations;
+using IdentityAuthentication.Model.Enums;
 using IdentityAuthentication.TokenValidation.Abstractions;
 using IdentityAuthentication.TokenValidation.TokenRefresh;
 using IdentityAuthentication.TokenValidation.TokenValidate;

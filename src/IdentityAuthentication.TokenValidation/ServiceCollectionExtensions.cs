@@ -5,7 +5,6 @@ using IdentityAuthentication.Model.Extensions;
 using IdentityAuthentication.Model.Handlers;
 using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;
-using IdentityAuthentication.TokenValidation.Services;
 using IdentityAuthentication.TokenValidation.TokenProviders;
 using IdentityAuthentication.TokenValidation.TokenRefresh;
 using IdentityAuthentication.TokenValidation.TokenValidate;
@@ -70,13 +69,13 @@ namespace IdentityAuthentication.TokenValidation
             });
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = IdentityAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = IdentityAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = IdentityAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultForbidScheme = IdentityAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = IdentityAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignOutScheme = IdentityAuthenticationDefaults.AuthenticationScheme;
-            }).AddScheme<IdentityAuthenticationOptions, IdentityAuthenticationHandler>(IdentityAuthenticationDefaults.AuthenticationScheme, options =>
+                options.DefaultScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+                options.DefaultChallengeScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+                options.DefaultForbidScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+                options.DefaultSignInScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+                options.DefaultSignOutScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+            }).AddScheme<IdentityAuthenticationOptions, IdentityAuthenticationHandler>(IdentityAuthenticationDefaultKeys.AuthenticationScheme, options =>
             {
                 options.Events = authenticationOptions.Events;
                 options.Authority = authenticationOptions.Authority;
@@ -97,7 +96,7 @@ namespace IdentityAuthentication.TokenValidation
             services.AddScoped<ITokenRefreshProvider, GrpcRefreshProvider>();
 
             services.AddScoped<IGrpcProvider, GrpcProvider>();
-            services.AddSingleton<AuthenticationConfigurationService>();
+            services.AddSingleton<IAuthenticationConfigurationProvider, AuthenticationConfigurationProvider>();
 
             services.AddGrpcClient<TokenGrpcProvider.TokenGrpcProviderClient>(options =>
             {

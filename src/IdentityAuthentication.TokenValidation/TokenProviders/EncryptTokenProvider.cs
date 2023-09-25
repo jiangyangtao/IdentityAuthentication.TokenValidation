@@ -1,4 +1,4 @@
-﻿using IdentityAuthentication.Model.Configurations;
+﻿using IdentityAuthentication.Model.Enums;
 using IdentityAuthentication.TokenValidation.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 
