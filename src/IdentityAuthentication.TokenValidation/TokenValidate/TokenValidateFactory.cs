@@ -1,5 +1,4 @@
 ﻿using IdentityAuthentication.TokenValidation.Abstractions;
-using IdentityAuthentication.TokenValidation.Enums;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
@@ -17,10 +16,10 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
 
         public ITokenValidateProvider CreateTokenValidateProvider()
         {
-            var connectionType = ConnectionType.Http;
-            if (_configurationProvider.AuthenticationConfiguration.EnableGrpcConnection) connectionType = ConnectionType.Grpc;
+            var isRsaValidate = _configurationProvider.CanClientValidation;
+            var provider = _serviceProvider.GetServices<ITokenValidateProvider>().FirstOrDefault(a => a.IsRsaValidate == isRsaValidate);
 
-            return _serviceProvider.GetServices<ITokenValidateProvider>().FirstOrDefault(a => a.ConnectionType == connectionType);
+            return provider ?? throw new Exception("Not found TokenValidateProvider");
         }
     }
 }

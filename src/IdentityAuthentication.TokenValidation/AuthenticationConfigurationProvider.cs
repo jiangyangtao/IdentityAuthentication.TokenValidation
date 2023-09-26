@@ -34,6 +34,7 @@ namespace IdentityAuthentication.TokenValidation
             {
                 if (AuthenticationConfiguration.TokenType != TokenType.JWT) return false;
                 if (IdentityAuthenticationConfiguration.RsaVerifySignatureConfiguration == null) return false;
+                if (IdentityAuthenticationConfiguration.RsaVerifySignatureConfiguration.PublicKey.IsNullOrEmpty()) return false;
 
                 return true;
             }
