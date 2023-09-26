@@ -5,7 +5,7 @@ using IdentityAuthentication.TokenValidation.Enums;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 
-namespace IdentityAuthentication.TokenValidation.TokenValidate
+namespace IdentityAuthentication.TokenValidation
 {
     internal class HttpAuthenticationProvider : IServerValidateProvider, ITokenRefreshProvider
     {

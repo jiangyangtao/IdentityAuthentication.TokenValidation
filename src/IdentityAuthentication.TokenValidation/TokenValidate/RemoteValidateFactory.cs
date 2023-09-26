@@ -2,14 +2,14 @@
 using IdentityAuthentication.TokenValidation.Enums;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IdentityAuthentication.TokenValidation
+namespace IdentityAuthentication.TokenValidation.TokenValidate
 {
-    internal class RemoteFactory : IRemoteFactory
+    internal class RemoteValidateFactory : IRemoteValidateFactory
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IAuthenticationConfigurationProvider _configurationProvider;
 
-        public RemoteFactory(IAuthenticationConfigurationProvider configurationProvider, IServiceProvider serviceProvider)
+        public RemoteValidateFactory(IAuthenticationConfigurationProvider configurationProvider, IServiceProvider serviceProvider)
         {
             _configurationProvider = configurationProvider;
             _serviceProvider = serviceProvider;

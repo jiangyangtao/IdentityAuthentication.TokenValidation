@@ -82,7 +82,7 @@ namespace IdentityAuthentication.TokenValidation
             });
 
             services.AddScoped<ITokenProvider, TokenProvider>();
-            services.AddScoped<IRemoteFactory, RemoteFactory>();
+            services.AddScoped<IRemoteValidateFactory, RemoteValidateFactory>();
 
             services.AddScoped<ITokenValidateFactory, TokenValidateFactory>();
             services.AddScoped<ITokenValidateProvider, RsaValidateProvider>();

@@ -1,6 +1,6 @@
 ﻿namespace IdentityAuthentication.TokenValidation.Abstractions
 {
-    internal interface IRemoteFactory
+    internal interface IRemoteValidateFactory
     {
         IServerValidateProvider CreateValidateProvider();
     }
