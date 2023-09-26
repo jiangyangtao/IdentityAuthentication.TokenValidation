@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
 {
-    internal class GrpcAuthenticationProvider : IServerValidateProvider
+    internal class GrpcAuthenticationProvider : IServerValidateProvider, ITokenRefreshProvider
     {
         private readonly IGrpcProvider _grpcProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -21,14 +21,27 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
             TokenGrpcProvider.TokenGrpcProviderClient tokenGrpcProvider)
         {
             _grpcProvider = grpcProvider;
-            _httpContextAccessor = httpContextAccessor;    
+            _httpContextAccessor = httpContextAccessor;
             _tokenResultProvider = tokenResultProvider;
             _tokenGrpcProvider = tokenGrpcProvider;
         }
 
-        public ConnectionType ConnectionType =>  ConnectionType.Grpc;
+        public ConnectionType ConnectionType => ConnectionType.Grpc;
 
         private string AccessToken => _httpContextAccessor.HttpContext?.Request.Headers.GetAuthorization();
+
+        public async Task<string> RefreshTokenAsync(string accessToken, string refreshToken)
+        {
+            try
+            {
+                var headers = _grpcProvider.BuildGrpcHeader(accessToken);
+                var r = await _tokenGrpcProvider.RefreshAsync(new RefreshTokenRequest { RefreshToken = refreshToken }, headers);
+                if (r.Result == false) return string.Empty;
+
+                return r.AccessToken;
+            }
+            finally { }
+        }
 
         public async Task<TokenValidationResult> TokenValidateAsync(string token)
         {
