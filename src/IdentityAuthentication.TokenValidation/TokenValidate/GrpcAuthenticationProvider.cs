@@ -7,14 +7,14 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
 {
-    internal class GrpcValidateProvider : IServerValidateProvider
+    internal class GrpcAuthenticationProvider : IServerValidateProvider
     {
         private readonly IGrpcProvider _grpcProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ITokenResultProvider _tokenResultProvider;
         private readonly TokenGrpcProvider.TokenGrpcProviderClient _tokenGrpcProvider;
 
-        public GrpcValidateProvider(
+        public GrpcAuthenticationProvider(
             IGrpcProvider grpcProvider,
             IHttpContextAccessor httpContextAccessor,
             ITokenResultProvider tokenResultProvider,

@@ -84,8 +84,8 @@ namespace IdentityAuthentication.TokenValidation
             services.AddScoped<ITokenProvider, TokenProvider>();
 
             services.AddScoped<ITokenValidateFactory, TokenValidateFactory>();
-            services.AddScoped<ITokenValidateProvider, HttpValidateProvider>();
-            services.AddScoped<ITokenValidateProvider, GrpcValidateProvider>();
+            services.AddScoped<ITokenValidateProvider, HttpAuthenticationProvider>();
+            services.AddScoped<ITokenValidateProvider, GrpcAuthenticationProvider>();
 
             services.AddScoped<IRefreshTokenProvider, RefreshTokenProvider>();
             services.AddScoped<ITokenRefreshFactory, TokenRefreshFactory>();

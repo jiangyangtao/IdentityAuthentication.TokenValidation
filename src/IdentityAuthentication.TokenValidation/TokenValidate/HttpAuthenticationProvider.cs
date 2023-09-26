@@ -5,13 +5,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
 {
-    internal class HttpValidateProvider : IServerValidateProvider
+    internal class HttpAuthenticationProvider : IServerValidateProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITokenResultProvider _tokenResultProvider;
         private readonly IAuthenticationConfigurationProvider _configurationProvider;
 
-        public HttpValidateProvider(
+        public HttpAuthenticationProvider(
             IHttpClientFactory httpClientFactory,
             ITokenResultProvider tokenResultProvider,
             IAuthenticationConfigurationProvider configurationProvider)
