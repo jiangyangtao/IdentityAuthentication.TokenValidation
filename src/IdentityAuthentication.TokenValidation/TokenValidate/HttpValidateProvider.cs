@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
 {
-    internal class HttpValidateProvider : ITokenValidateProvider
+    internal class HttpValidateProvider : IServerValidateProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITokenResultProvider _tokenResultProvider;

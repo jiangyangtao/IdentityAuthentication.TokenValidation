@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IdentityAuthentication.TokenValidation.Abstractions;
+﻿using IdentityAuthentication.TokenValidation.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
 {
     internal class RemoteValidateProvider : ITokenValidateProvider
     {
-        public RemoteValidateProvider()
+        private readonly IServerValidateProvider _serverValidateProvider;
+
+        public RemoteValidateProvider(IRemoteFactory remoteFactory)
         {
+            _serverValidateProvider = remoteFactory.CreateValidateProvider();
         }
 
         public bool IsRsaValidate => false;
 
-        public Task<TokenValidationResult> TokenValidateAsync(string token)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<TokenValidationResult> TokenValidateAsync(string token) => _serverValidateProvider.TokenValidateAsync(token);
     }
 }
