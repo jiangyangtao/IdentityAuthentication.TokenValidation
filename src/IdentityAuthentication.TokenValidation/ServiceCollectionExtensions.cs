@@ -81,9 +81,7 @@ namespace IdentityAuthentication.TokenValidation
                 options.Authority = authenticationOptions.Authority;
             });
 
-            services.AddScoped<ITokenProvider, JwtTokenProvider>();
-            services.AddScoped<ITokenProvider, EncryptTokenProvider>();
-            services.AddScoped<ITokenProvider, ReferenceTokenProvider>();
+            services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<ITokenProviderFactory, TokenProviderFactory>();
 
             services.AddScoped<ITokenValidateFactory, TokenValidateFactory>();
