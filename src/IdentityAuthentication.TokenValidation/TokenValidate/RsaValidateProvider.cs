@@ -1,24 +1,39 @@
-﻿using IdentityAuthentication.TokenValidation.Abstractions;
+﻿using IdentityAuthentication.Model;
+using IdentityAuthentication.TokenValidation.Abstractions;
+using IdentityAuthentication.TokenValidation.TokenRefresh;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
 {
     internal class RsaValidateProvider : ITokenValidateProvider
     {
-        public RsaValidateProvider()
+        private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
+        private readonly Model.TokenValidation _tokenValidation;
+        private readonly TokenValidationParameters _tokenValidationParameters;
+        private readonly RefreshTokenProvider _refreshTokenService;
+        private readonly Credentials PublicCredentials;
+
+        public RsaValidateProvider(RefreshTokenProvider refreshTokenService, IAuthenticationConfigurationProvider configurationProvider)
         {
+            var publicSignature = configurationProvider.RsaVerifySignatureConfiguration.ToRsaSignature();
+            PublicCredentials = new Credentials(publicSignature);
+
+            _tokenValidation = new Model.TokenValidation(configurationProvider.AccessTokenConfiguration, PublicCredentials);
+
+            _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            _tokenValidationParameters = _tokenValidation.GenerateTokenValidation();
+            _refreshTokenService = refreshTokenService;
         }
 
         public bool IsRsaValidate => true;
 
-        public Task<TokenValidationResult> TokenValidateAsync(string token)
+        public async Task<TokenValidationResult> TokenValidateAsync(string token)
         {
-            throw new NotImplementedException();
+            var tokenValidationResult = await _jwtSecurityTokenHandler.ValidateTokenAsync(token, _tokenValidationParameters);
+            if (tokenValidationResult.IsValid) await _refreshTokenService.RefreshTokenAsync(tokenValidationResult.ClaimsIdentity.Claims);
+
+            return tokenValidationResult;
         }
     }
 }

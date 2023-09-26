@@ -12,8 +12,6 @@ namespace IdentityAuthentication.TokenValidation.TokenProviders
             _tokenValidateProvider = tokenValidateFactory.CreateTokenValidateProvider();
         }
 
-        public bool LocalValidate => throw new NotImplementedException();
-
         public async Task<TokenValidationResult> ValidateTokenAsync(string token)
         {
             if (token.IsNullOrEmpty()) return Model.TokenValidation.FailedTokenValidationResult;
