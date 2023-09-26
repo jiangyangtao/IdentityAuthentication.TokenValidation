@@ -15,7 +15,7 @@ namespace IdentityAuthentication.TokenValidation
 {
     internal class IdentityAuthenticationHandler : AuthenticationHandler<IdentityAuthenticationOptions>
     {
-        private readonly ITokenProviderFactory _tokenProviderFactory;
+        private readonly ITokenProvider _tokenProvider;
         private readonly IAuthenticationConfigurationProvider _configurationProvider;
         private readonly AuthenticateResult EmptyAuthenticateSuccessResult;
 
@@ -23,10 +23,10 @@ namespace IdentityAuthentication.TokenValidation
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            ITokenProviderFactory tokenProviderFactory,
+            ITokenProvider tokenProvider,
             IAuthenticationConfigurationProvider configurationProvider) : base(options, logger, encoder, clock)
         {
-            _tokenProviderFactory = tokenProviderFactory;
+            _tokenProvider = tokenProvider;
             _configurationProvider = configurationProvider;
 
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(), IdentityAuthenticationDefaultKeys.AuthenticationScheme);
@@ -74,7 +74,7 @@ namespace IdentityAuthentication.TokenValidation
                 Context.Request.Headers.SetAuthorization(token);
             }
 
-            var tokenValidationResult = await _tokenProviderFactory.CreateTokenProvider().ValidateTokenAsync(token);
+            var tokenValidationResult = await _tokenProvider.ValidateTokenAsync(token);
             if (tokenValidationResult.IsValid == false) return AuthenticateResult.NoResult();
 
 

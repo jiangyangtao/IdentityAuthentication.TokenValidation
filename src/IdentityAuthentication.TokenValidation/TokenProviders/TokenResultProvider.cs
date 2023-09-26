@@ -1,5 +1,4 @@
-﻿using IdentityAuthentication.Model;
-using IdentityAuthentication.TokenValidation.Abstractions;
+﻿using IdentityAuthentication.TokenValidation.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using System.Security.Claims;
