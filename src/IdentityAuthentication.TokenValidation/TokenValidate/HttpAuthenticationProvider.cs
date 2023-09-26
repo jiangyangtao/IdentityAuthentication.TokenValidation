@@ -10,16 +10,13 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
     internal class HttpAuthenticationProvider : IServerValidateProvider, ITokenRefreshProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ITokenResultProvider _tokenResultProvider;
         private readonly IAuthenticationConfigurationProvider _configurationProvider;
 
         public HttpAuthenticationProvider(
             IHttpClientFactory httpClientFactory,
-            ITokenResultProvider tokenResultProvider,
             IAuthenticationConfigurationProvider configurationProvider)
         {
             _httpClientFactory = httpClientFactory;
-            _tokenResultProvider = tokenResultProvider;
             _configurationProvider = configurationProvider;
         }
 
@@ -52,12 +49,12 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
 
             httpClient.DefaultRequestHeaders.Add(IdentityAuthenticationDefaultKeys.Authorization, token);
             var response = await httpClient.PostAsync(url, TokenBuilder.EmptyContent);
-            if (response.IsSuccessStatusCode == false) return TokenBuilder.FailTokenResult;
+            if (response.IsSuccessStatusCode == false) return Model.TokenValidation.FailedTokenValidationResult;
 
             var json = await response.Content.ReadAsStringAsync();
-            if (json.IsNullOrEmpty()) return TokenBuilder.FailTokenResult;
+            if (json.IsNullOrEmpty()) return Model.TokenValidation.FailedTokenValidationResult;
 
-            var result = await _tokenResultProvider.BuildTokenSuccessResultAsync(json);
+            var result = TokenBuilder.BuildTokenSuccessResultAsync(json);
             return result;
         }
     }

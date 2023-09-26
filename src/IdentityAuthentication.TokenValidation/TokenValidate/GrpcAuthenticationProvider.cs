@@ -12,16 +12,13 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
     internal class GrpcAuthenticationProvider : IServerValidateProvider, ITokenRefreshProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ITokenResultProvider _tokenResultProvider;
         private readonly TokenGrpcProvider.TokenGrpcProviderClient _tokenGrpcProvider;
 
         public GrpcAuthenticationProvider(
             IHttpContextAccessor httpContextAccessor,
-            ITokenResultProvider tokenResultProvider,
             TokenGrpcProvider.TokenGrpcProviderClient tokenGrpcProvider)
         {
             _httpContextAccessor = httpContextAccessor;
-            _tokenResultProvider = tokenResultProvider;
             _tokenGrpcProvider = tokenGrpcProvider;
         }
 
@@ -54,7 +51,7 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
                 {
                     IsValid = r.Result
                 };
-                return await _tokenResultProvider.BuildTokenSuccessResultAsync(r.Claims);
+                return TokenBuilder.BuildTokenSuccessResultAsync(r.Claims);
             }
             catch
             {
