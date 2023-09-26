@@ -1,5 +1,4 @@
-﻿using Grpc.Core;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 
 namespace IdentityAuthentication.TokenValidation.Abstractions
 {
