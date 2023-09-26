@@ -1,7 +1,7 @@
 ﻿using IdentityAuthentication.TokenValidation.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 
-namespace IdentityAuthentication.TokenValidation.TokenProviders
+namespace IdentityAuthentication.TokenValidation
 {
     internal class TokenProvider : ITokenProvider
     {
