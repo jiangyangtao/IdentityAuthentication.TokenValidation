@@ -1,20 +1,20 @@
-﻿using IdentityAuthentication.TokenValidation.Abstractions;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IdentityAuthentication.TokenValidation.Abstractions;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
 {
-    internal class RsaValidateProvider : ITokenValidateProvider
+    internal class RemoteValidateProvider : ITokenValidateProvider
     {
-        public RsaValidateProvider()
+        public RemoteValidateProvider()
         {
         }
 
-        public bool IsRsaValidate => true;
+        public bool IsRsaValidate => false;
 
         public Task<TokenValidationResult> TokenValidateAsync(string token)
         {

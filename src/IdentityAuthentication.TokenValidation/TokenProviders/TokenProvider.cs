@@ -1,24 +1,24 @@
 ﻿using IdentityAuthentication.TokenValidation.Abstractions;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IdentityAuthentication.TokenValidation.TokenProviders
 {
     internal class TokenProvider : ITokenProvider
     {
-        public TokenProvider()
+        private readonly ITokenValidateProvider _tokenValidateProvider;
+
+        public TokenProvider(ITokenValidateFactory tokenValidateFactory)
         {
+            _tokenValidateProvider = tokenValidateFactory.CreateTokenValidateProvider();
         }
 
         public bool LocalValidate => throw new NotImplementedException();
 
-        public Task<TokenValidationResult> ValidateTokenAsync(string token)
+        public async Task<TokenValidationResult> ValidateTokenAsync(string token)
         {
-            throw new NotImplementedException();
+            if (token.IsNullOrEmpty()) return Model.TokenValidation.FailedTokenValidationResult;
+
+            return await _tokenValidateProvider.TokenValidateAsync(token);
         }
     }
 }
