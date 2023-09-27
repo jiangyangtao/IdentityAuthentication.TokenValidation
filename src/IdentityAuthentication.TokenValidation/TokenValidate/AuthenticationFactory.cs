@@ -8,20 +8,26 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IAuthenticationConfigurationProvider _configurationProvider;
+        private readonly ConnectionType ConnectionType;
 
         public AuthenticationFactory(IAuthenticationConfigurationProvider configurationProvider, IServiceProvider serviceProvider)
         {
             _configurationProvider = configurationProvider;
             _serviceProvider = serviceProvider;
+
+            ConnectionType = ConnectionType.Http;
+            if (_configurationProvider.AuthenticationConfiguration.EnableGrpcConnection) ConnectionType = ConnectionType.Grpc;
+        }
+
+        public ITokenRefreshProvider CreateTokenRefreshProvider()
+        {
+            var provider = _serviceProvider.GetServices<ITokenRefreshProvider>().FirstOrDefault(a => a.ConnectionType == ConnectionType);
+            return provider ?? throw new Exception("Not found IServerValidateProvider the realize");
         }
 
         public IServerValidateProvider CreateValidateProvider()
         {
-            var connectionType = ConnectionType.Http;
-            if (_configurationProvider.AuthenticationConfiguration.EnableGrpcConnection) connectionType = ConnectionType.Grpc;
-
-            var provider = _serviceProvider.GetServices<IServerValidateProvider>().FirstOrDefault(a => a.ConnectionType == connectionType);
-
+            var provider = _serviceProvider.GetServices<IServerValidateProvider>().FirstOrDefault(a => a.ConnectionType == ConnectionType);
             return provider ?? throw new Exception("Not found IServerValidateProvider the realize");
         }
     }
