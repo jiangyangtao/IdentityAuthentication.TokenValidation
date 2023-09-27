@@ -13,20 +13,20 @@ namespace IdentityAuthentication.TokenValidation.TokenRefresh
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TokenValidationOptions _validationOptions;
-        private readonly ITokenRefreshFactory _tokenRefreshFactory;
+        private readonly IAuthenticationFactory _authenticationFactory;
         private readonly IAuthenticationConfigurationProvider _configurationProvider;
 
 
         public RefreshTokenProvider(
             IHttpContextAccessor httpContextAccessor,
             IOptions<TokenValidationOptions> tokenValidationOptions,
-            ITokenRefreshFactory tokenRefreshFactory,
-            IAuthenticationConfigurationProvider configurationProvider)
+            IAuthenticationConfigurationProvider configurationProvider,
+            IAuthenticationFactory authenticationFactory)
         {
             _httpContextAccessor = httpContextAccessor;
             _validationOptions = tokenValidationOptions.Value;
-            _tokenRefreshFactory = tokenRefreshFactory;
             _configurationProvider = configurationProvider;
+            _authenticationFactory = authenticationFactory;
         }
 
         private string AccessToken => _httpContextAccessor.HttpContext?.Request.Headers.GetAuthorization();
@@ -50,7 +50,7 @@ namespace IdentityAuthentication.TokenValidation.TokenRefresh
             var refreshTime = DateTime.Now.AddSeconds(_configurationProvider.AccessTokenConfiguration.RefreshTime);
             if (refreshTime < expirationTime) return;
 
-            var accessToken = await _tokenRefreshFactory.CreateTokenRefreshProvider().RefreshTokenAsync(AccessToken, RefreshToken);
+            var accessToken = await _authenticationFactory.CreateTokenRefreshProvider().RefreshTokenAsync(AccessToken, RefreshToken);
             if (accessToken.NotNullAndEmpty()) _httpContextAccessor.HttpContext?.Response.Headers.SetAccessToken(accessToken);
         }
     }
