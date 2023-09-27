@@ -7,9 +7,9 @@ namespace IdentityAuthentication.TokenValidation
     {
         private readonly ITokenValidateProvider _tokenValidateProvider;
 
-        public TokenProvider(ITokenValidateFactory tokenValidateFactory)
+        public TokenProvider(IAuthenticationFactory authenticationFactory)
         {
-            _tokenValidateProvider = tokenValidateFactory.CreateTokenValidateProvider();
+            _tokenValidateProvider = authenticationFactory.CreateTokenValidateProvider();
         }
 
         public async Task<TokenValidationResult> ValidateTokenAsync(string token)
