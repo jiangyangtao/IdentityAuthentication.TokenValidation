@@ -20,11 +20,8 @@
 		<PrivateAssets>all</PrivateAssets>
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
+	<PackageReference Include="IdentityAuthentication.Model" Version="1.1.8" />
 	<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\IdentityAuthentication\src\IdentityAuthentication.Model\IdentityAuthentication.Model.csproj" />
   </ItemGroup>
 
 	<ItemGroup>
