@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
-namespace IdentityAuthentication.TokenValidation.TokenRefresh
+namespace IdentityAuthentication.TokenValidation
 {
     internal class RefreshTokenProvider : IRefreshTokenProvider
     {

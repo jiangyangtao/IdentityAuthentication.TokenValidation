@@ -1,10 +1,9 @@
 ﻿using IdentityAuthentication.Model;
 using IdentityAuthentication.TokenValidation.Abstractions;
-using IdentityAuthentication.TokenValidation.TokenRefresh;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace IdentityAuthentication.TokenValidation.TokenValidate
+namespace IdentityAuthentication.TokenValidation
 {
     internal class RsaValidateProvider : ITokenValidateProvider
     {

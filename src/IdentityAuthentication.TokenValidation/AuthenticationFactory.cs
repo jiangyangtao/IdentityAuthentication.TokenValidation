@@ -2,7 +2,7 @@
 using IdentityAuthentication.TokenValidation.Enums;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IdentityAuthentication.TokenValidation.TokenValidate
+namespace IdentityAuthentication.TokenValidation
 {
     internal class AuthenticationFactory : IAuthenticationFactory
     {
@@ -28,10 +28,10 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
         public ITokenValidateProvider CreateTokenValidateProvider()
         {
             if (_configurationProvider.CanClientValidation)
-                return _serviceProvider.GetServices<ITokenValidateProvider>().FirstOrDefault(a => a.IsRsaValidate == true) ?? throw new Exception("Not found ITokenValidateProvider the rsa realize");
+                return _serviceProvider.GetServices<IAuthenticationProvider>().FirstOrDefault(a => a.IsRsaValidate == true) ?? throw new Exception("Not found IAuthenticationProvider the rsa realize");
 
             var provider = _serviceProvider.GetServices<IAuthenticationProvider>().FirstOrDefault(a => a.IsRsaValidate == false && a.ConnectionType == ConnectionType);
-            return provider as ITokenValidateProvider ?? throw new Exception("Not found ITokenValidateProvider the realize");
+            return provider ?? throw new Exception("Not found ITokenValidateProvider the realize");
         }
     }
 }
