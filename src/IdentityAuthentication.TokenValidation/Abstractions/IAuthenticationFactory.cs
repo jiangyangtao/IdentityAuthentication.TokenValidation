@@ -2,7 +2,7 @@
 {
     internal interface IAuthenticationFactory
     {
-        ITokenValidateProvider CreateValidateProvider();
+        ITokenValidateProvider CreateTokenValidateProvider();
 
         ITokenRefreshProvider CreateTokenRefreshProvider();
     }

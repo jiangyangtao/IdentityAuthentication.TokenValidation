@@ -25,10 +25,13 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
             return provider ?? throw new Exception("Not found IServerValidateProvider the realize");
         }
 
-        public ITokenValidateProvider CreateValidateProvider()
+        public ITokenValidateProvider CreateTokenValidateProvider()
         {
-            var provider = _serviceProvider.GetServices<ITokenValidateProvider>().FirstOrDefault(a => a.ConnectionType == ConnectionType);
-            return provider ?? throw new Exception("Not found IServerValidateProvider the realize");
+            if (_configurationProvider.CanClientValidation)
+                return _serviceProvider.GetServices<ITokenValidateProvider>().FirstOrDefault(a => a.IsRsaValidate == true) ?? throw new Exception("Not found ITokenValidateProvider the rsa realize");
+
+            var provider = _serviceProvider.GetServices<ITokenRefreshProvider>().FirstOrDefault(a => a.ConnectionType == ConnectionType);
+            return provider as ITokenValidateProvider ?? throw new Exception("Not found ITokenValidateProvider the realize");
         }
     }
 }
