@@ -24,7 +24,7 @@ namespace IdentityAuthentication.TokenValidation
 
         public AccessTokenConfiguration? AccessTokenConfiguration => IdentityAuthenticationConfiguration.AccessTokenConfiguration;
 
-        public TokenConfigurationBase? RefreshTokenConfiguration => IdentityAuthenticationConfiguration.RefreshTokenConfiguration;
+        public TokenBaseConfiguration? RefreshTokenConfiguration => IdentityAuthenticationConfiguration.RefreshTokenConfiguration;
 
         public RsaVerifySignatureConfiguration? RsaVerifySignatureConfiguration => IdentityAuthenticationConfiguration.RsaVerifySignatureConfiguration;
 
@@ -40,7 +40,7 @@ namespace IdentityAuthentication.TokenValidation
             }
         }
 
-        public AuthenticationConfigurationBase AuthenticationConfiguration => IdentityAuthenticationConfiguration.AuthenticationConfiguration;
+        public AuthenticationBaseConfiguration AuthenticationConfiguration => IdentityAuthenticationConfiguration.AuthenticationConfiguration;
 
         private IdentityAuthenticationConfiguration IdentityAuthenticationConfiguration { set; get; }
 
@@ -79,10 +79,10 @@ namespace IdentityAuthentication.TokenValidation
             if (response.IsSuccessStatusCode == false) throw new HttpRequestException($"Failed to request {endpoint}.");
 
             var result = await response.Content.ReadAsStringAsync();
-            if (result.IsNullOrEmpty()) throw new NullReferenceException($"{endpoint} the response result is empty.");
+            if (result.IsNullOrEmpty()) throw new HttpRequestException($"{endpoint} the response result is empty.");
 
             var configuration = JsonConvert.DeserializeObject<IdentityAuthenticationConfiguration>(result);
-            IdentityAuthenticationConfiguration = configuration ?? throw new NullReferenceException($"{endpoint} the response result deserialization failed.");
+            IdentityAuthenticationConfiguration = configuration ?? throw new JsonException($"{endpoint} the response result deserialization failed.");
         }
     }
 }

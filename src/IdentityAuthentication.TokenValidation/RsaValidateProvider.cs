@@ -10,10 +10,10 @@ namespace IdentityAuthentication.TokenValidation
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
         private readonly Model.TokenValidation _tokenValidation;
         private readonly TokenValidationParameters _tokenValidationParameters;
-        private readonly RefreshTokenProvider _refreshTokenService;
+        private readonly IRefreshTokenProvider _refreshTokenService;
         private readonly Credentials PublicCredentials;
 
-        public RsaValidateProvider(RefreshTokenProvider refreshTokenService, IAuthenticationConfigurationProvider configurationProvider)
+        public RsaValidateProvider(IRefreshTokenProvider refreshTokenService, IAuthenticationConfigurationProvider configurationProvider)
         {
             var publicSignature = configurationProvider.RsaVerifySignatureConfiguration.ToRsaSignature();
             PublicCredentials = new Credentials(publicSignature);

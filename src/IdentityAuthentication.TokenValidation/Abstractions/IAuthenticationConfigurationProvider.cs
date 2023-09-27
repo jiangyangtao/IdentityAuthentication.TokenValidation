@@ -6,11 +6,11 @@ namespace IdentityAuthentication.TokenValidation.Abstractions
 {
     internal interface IAuthenticationConfigurationProvider
     {
-        AuthenticationConfigurationBase AuthenticationConfiguration { get; }
+        AuthenticationBaseConfiguration AuthenticationConfiguration { get; }
 
         AccessTokenConfiguration? AccessTokenConfiguration { get; }
 
-        TokenConfigurationBase? RefreshTokenConfiguration { get; }
+        TokenBaseConfiguration? RefreshTokenConfiguration { get; }
 
         RsaVerifySignatureConfiguration? RsaVerifySignatureConfiguration { get; }
 

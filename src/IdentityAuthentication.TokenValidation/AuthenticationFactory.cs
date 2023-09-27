@@ -28,7 +28,7 @@ namespace IdentityAuthentication.TokenValidation
         public ITokenValidateProvider CreateTokenValidateProvider()
         {
             if (_configurationProvider.CanClientValidation)
-                return _serviceProvider.GetServices<IAuthenticationProvider>().FirstOrDefault(a => a.IsRsaValidate == true) ?? throw new Exception("Not found IAuthenticationProvider the rsa realize");
+                return _serviceProvider.GetServices<ITokenValidateProvider>().FirstOrDefault(a => a.IsRsaValidate == true) ?? throw new Exception("Not found IAuthenticationProvider the rsa realize");
 
             var provider = _serviceProvider.GetServices<IAuthenticationProvider>().FirstOrDefault(a => a.IsRsaValidate == false && a.ConnectionType == ConnectionType);
             return provider ?? throw new Exception("Not found ITokenValidateProvider the realize");
