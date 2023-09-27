@@ -7,7 +7,7 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
     {
         private readonly IServerValidateProvider _serverValidateProvider;
 
-        public RemoteValidateProvider(IRemoteValidateFactory remoteFactory)
+        public RemoteValidateProvider(IAuthenticationFactory remoteFactory)
         {
             _serverValidateProvider = remoteFactory.CreateValidateProvider();
         }

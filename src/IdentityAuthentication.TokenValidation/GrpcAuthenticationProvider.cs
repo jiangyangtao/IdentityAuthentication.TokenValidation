@@ -7,7 +7,7 @@ using IdentityAuthentication.TokenValidation.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 
-namespace IdentityAuthentication.TokenValidation.TokenValidate
+namespace IdentityAuthentication.TokenValidation
 {
     internal class GrpcAuthenticationProvider : IServerValidateProvider, ITokenRefreshProvider
     {

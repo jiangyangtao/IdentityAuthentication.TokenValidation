@@ -4,12 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityAuthentication.TokenValidation.TokenValidate
 {
-    internal class RemoteValidateFactory : IRemoteValidateFactory
+    internal class AuthenticationFactory : IAuthenticationFactory
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IAuthenticationConfigurationProvider _configurationProvider;
 
-        public RemoteValidateFactory(IAuthenticationConfigurationProvider configurationProvider, IServiceProvider serviceProvider)
+        public AuthenticationFactory(IAuthenticationConfigurationProvider configurationProvider, IServiceProvider serviceProvider)
         {
             _configurationProvider = configurationProvider;
             _serviceProvider = serviceProvider;
