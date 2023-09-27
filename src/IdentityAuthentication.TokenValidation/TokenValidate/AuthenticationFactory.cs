@@ -25,9 +25,9 @@ namespace IdentityAuthentication.TokenValidation.TokenValidate
             return provider ?? throw new Exception("Not found IServerValidateProvider the realize");
         }
 
-        public IServerValidateProvider CreateValidateProvider()
+        public ITokenValidateProvider CreateValidateProvider()
         {
-            var provider = _serviceProvider.GetServices<IServerValidateProvider>().FirstOrDefault(a => a.ConnectionType == ConnectionType);
+            var provider = _serviceProvider.GetServices<ITokenValidateProvider>().FirstOrDefault(a => a.ConnectionType == ConnectionType);
             return provider ?? throw new Exception("Not found IServerValidateProvider the realize");
         }
     }

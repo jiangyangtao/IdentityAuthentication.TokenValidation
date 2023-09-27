@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace IdentityAuthentication.TokenValidation
 {
-    internal class HttpAuthenticationProvider : IServerValidateProvider, ITokenRefreshProvider
+    internal class HttpAuthenticationProvider : ITokenValidateProvider, ITokenRefreshProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAuthenticationConfigurationProvider _configurationProvider;
@@ -21,6 +21,8 @@ namespace IdentityAuthentication.TokenValidation
         }
 
         public ConnectionType ConnectionType => ConnectionType.Http;
+
+        public bool IsRsaValidate => false;
 
         public async Task<string> RefreshTokenAsync(string accessToken, string refreshToken)
         {

@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation
 {
-    internal class GrpcAuthenticationProvider : IServerValidateProvider, ITokenRefreshProvider
+    internal class GrpcAuthenticationProvider : ITokenValidateProvider, ITokenRefreshProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TokenGrpcProvider.TokenGrpcProviderClient _tokenGrpcProvider;
@@ -25,6 +25,8 @@ namespace IdentityAuthentication.TokenValidation
         public ConnectionType ConnectionType => ConnectionType.Grpc;
 
         private string AccessToken => _httpContextAccessor.HttpContext?.Request.Headers.GetAuthorization();
+
+        public bool IsRsaValidate => false;
 
         private Metadata BuildGrpcHeader(string token = "") => new() { { IdentityAuthenticationDefaultKeys.Authorization, token.IsNullOrEmpty() ? AccessToken : token } };
 
