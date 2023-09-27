@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAuthentication.TokenValidation
 {
-    internal class GrpcAuthenticationProvider : ITokenValidateProvider, ITokenRefreshProvider
+    internal class GrpcAuthenticationProvider : IAuthenticationProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TokenGrpcProvider.TokenGrpcProviderClient _tokenGrpcProvider;

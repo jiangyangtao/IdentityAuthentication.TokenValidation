@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace IdentityAuthentication.TokenValidation
 {
-    internal class HttpAuthenticationProvider : ITokenValidateProvider, ITokenRefreshProvider
+    internal class HttpAuthenticationProvider : IAuthenticationProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAuthenticationConfigurationProvider _configurationProvider;
