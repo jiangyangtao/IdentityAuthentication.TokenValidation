@@ -6,6 +6,7 @@ using IdentityAuthentication.Model.Handlers;
 using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation;
 using IdentityAuthentication.TokenValidation.Abstractions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,24 +16,24 @@ namespace IdentityAuthentication.TokenValidation
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddIdentityAuthentication(this IServiceCollection services) => AddAuthentication(services);
+        public static AuthenticationBuilder AddIdentityAuthentication(this IServiceCollection services) => AddAuthentication(services);
 
-        public static IServiceCollection AddIdentityAuthentication(this IServiceCollection services, IdentityAuthenticationEvents authenticationEvents)
+        public static AuthenticationBuilder AddIdentityAuthentication(this IServiceCollection services, IdentityAuthenticationEvents authenticationEvents)
             => AddAuthentication(services, authenticationEvents);
 
-        public static IServiceCollection AddAuthentication(this IServiceCollection services)
+        public static AuthenticationBuilder AddAuthentication(this IServiceCollection services)
         {
             var endpoing = services.GetEndpoint();
             return AddAuthentication(services, endpoing);
         }
 
-        public static IServiceCollection AddAuthentication(this IServiceCollection services, IdentityAuthenticationEvents authenticationEvents)
+        public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, IdentityAuthenticationEvents authenticationEvents)
         {
             var endpoing = services.GetEndpoint();
             return AddAuthentication(services, endpoing, authenticationEvents);
         }
 
-        public static IServiceCollection AddAuthentication(this IServiceCollection services, string authenticationEndpoint)
+        public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, string authenticationEndpoint)
         {
             if (authenticationEndpoint.IsNullOrEmpty()) throw new ArgumentNullException(nameof(authenticationEndpoint));
 
@@ -42,7 +43,7 @@ namespace IdentityAuthentication.TokenValidation
             });
         }
 
-        public static IServiceCollection AddAuthentication(this IServiceCollection services, string authenticationEndpoint, IdentityAuthenticationEvents authenticationEvents)
+        public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, string authenticationEndpoint, IdentityAuthenticationEvents authenticationEvents)
         {
             if (authenticationEndpoint.IsNullOrEmpty()) throw new ArgumentNullException(nameof(authenticationEndpoint));
 
@@ -54,7 +55,7 @@ namespace IdentityAuthentication.TokenValidation
             });
         }
 
-        public static IServiceCollection AddAuthentication(this IServiceCollection services, Action<IdentityAuthenticationOptions> optionsAction)
+        public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, Action<IdentityAuthenticationOptions> optionsAction)
         {
             var authenticationOptions = new IdentityAuthenticationOptions();
             optionsAction(authenticationOptions);
@@ -65,19 +66,20 @@ namespace IdentityAuthentication.TokenValidation
                 options.AuthorityUrl = authorityUrl;
                 options.EnableJWTRefreshToken = authenticationOptions.EnableJWTRefreshToken;
             });
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
-                options.DefaultChallengeScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
-                options.DefaultForbidScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
-                options.DefaultSignInScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
-                options.DefaultSignOutScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
-            }).AddScheme<IdentityAuthenticationOptions, IdentityAuthenticationHandler>(IdentityAuthenticationDefaultKeys.AuthenticationScheme, options =>
-            {
-                options.Events = authenticationOptions.Events;
-                options.Authority = authenticationOptions.Authority;
-            });
+
+            var authenticationBuilder = services.AddAuthentication(options =>
+               {
+                   options.DefaultScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+                   options.DefaultAuthenticateScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+                   options.DefaultChallengeScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+                   options.DefaultForbidScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+                   options.DefaultSignInScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+                   options.DefaultSignOutScheme = IdentityAuthenticationDefaultKeys.AuthenticationScheme;
+               }).AddScheme<IdentityAuthenticationOptions, IdentityAuthenticationHandler>(IdentityAuthenticationDefaultKeys.AuthenticationScheme, options =>
+               {
+                   options.Events = authenticationOptions.Events;
+                   options.Authority = authenticationOptions.Authority;
+               });
 
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<IAuthenticationFactory, AuthenticationFactory>();
@@ -127,7 +129,7 @@ namespace IdentityAuthentication.TokenValidation
             });
             services.AddHttpContextAccessor();
 
-            return services;
+            return authenticationBuilder;
         }
 
         public static IApplicationBuilder UseIdentityAuthentication(this IApplicationBuilder builder)
