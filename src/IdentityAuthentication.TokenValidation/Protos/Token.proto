@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-option csharp_namespace = "IdentityAuthentication.Application.Grpc.Provider";
+option csharp_namespace = "IdentityAuthentication.GrpcProviders";
 
-package TokenProvider;
+package IdentityAuthentication.GrpcProvider;
 
 service TokenGrpcProvider {
 	rpc Refresh(RefreshTokenRequest) returns (RefreshTokenResponse);

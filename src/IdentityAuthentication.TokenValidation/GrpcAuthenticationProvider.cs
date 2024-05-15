@@ -1,5 +1,5 @@
 ﻿using Grpc.Core;
-using IdentityAuthentication.Application.Grpc.Provider;
+using IdentityAuthentication.GrpcProviders;
 using IdentityAuthentication.Model.Extensions;
 using IdentityAuthentication.Model.Handles;
 using IdentityAuthentication.TokenValidation.Abstractions;

@@ -1,6 +1,6 @@
 ﻿using Grpc.Core;
 using Grpc.Net.Client.Configuration;
-using IdentityAuthentication.Application.Grpc.Provider;
+using IdentityAuthentication.GrpcProviders;
 using IdentityAuthentication.Model.Extensions;
 using IdentityAuthentication.Model.Handlers;
 using IdentityAuthentication.Model.Handles;
