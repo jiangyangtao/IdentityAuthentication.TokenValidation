@@ -21,7 +21,12 @@
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
 	<PackageReference Include="IdentityAuthentication.Model" Version="1.1.8" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.3.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.Core" Version="2.3.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Hosting.Server.Abstractions" Version="2.3.0" />
+	<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.34.0" />
 	<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.34.0" />
   </ItemGroup>
 
 	<ItemGroup>
